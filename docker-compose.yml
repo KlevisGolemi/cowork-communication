@@ -1,0 +1,48 @@
+services:
+  webhook-queue:
+    build: .
+    container_name: webhook-queue
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    volumes:
+      # Persistance SQLite — survit aux redémarrages
+      - queue_data:/data
+
+    networks:
+      - traefik_proxy   # même réseau que ton Traefik existant
+
+    # Port interne uniquement — Traefik gère l'extérieur
+    # NE PAS exposer le port 3333 directement
+    expose:
+      - "3333"
+
+    labels:
+      # ── Traefik routing ─────────────────────────────────────────
+      - "traefik.enable=true"
+      - "traefik.http.routers.wq.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.wq.entrypoints=websecure"
+      - "traefik.http.routers.wq.tls.certresolver=letsencrypt"
+      - "traefik.http.services.wq.loadbalancer.server.port=3333"
+
+      # ── Middlewares sécurité ─────────────────────────────────────
+      - "traefik.http.routers.wq.middlewares=wq-headers"
+      - "traefik.http.middlewares.wq-headers.headers.customResponseHeaders.X-Content-Type-Options=nosniff"
+      - "traefik.http.middlewares.wq-headers.headers.customResponseHeaders.X-Frame-Options=DENY"
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3333/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  queue_data:
+    driver: local
+
+networks:
+  traefik_proxy:
+    external: true   # ton réseau Traefik existant
