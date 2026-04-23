@@ -34,6 +34,43 @@ services:
       retries: 3
       start_period: 15s
 
+  cowork-mcp:
+    build: ./mcp
+    container_name: cowork-mcp
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      - QUEUE_INTERNAL_URL=http://webhook-queue:3333
+      - PORT=8080
+
+    networks:
+      - default
+
+    expose:
+      - "8080"
+
+    depends_on:
+      webhook-queue:
+        condition: service_healthy
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp.rule=Host(`${MCP_DOMAIN}`)"
+      - "traefik.http.routers.mcp.entrypoints=websecure"
+      - "traefik.http.routers.mcp.tls=true"
+      - "traefik.http.routers.mcp.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mcp.loadbalancer.server.port=8080"
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
 volumes:
   queue_data:
     driver: local

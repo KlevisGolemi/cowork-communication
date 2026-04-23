@@ -20,7 +20,8 @@ File d'attente HTTP durable, auto-hébergée, pour découpler un **producteur** 
 6. [Intégration consommateur (Cowork, script, etc.)](#intégration-consommateur)
 7. [Codes d'erreur](#codes-derreur)
 8. [Sécurité](#sécurité)
-9. [Désinstallation](#désinstallation)
+9. [MCP Server — accès depuis Claude](#mcp-server--accès-depuis-claude)
+10. [Désinstallation](#désinstallation)
 
 ---
 
@@ -33,7 +34,8 @@ File d'attente HTTP durable, auto-hébergée, pour découpler un **producteur** 
 Le script interactif :
 - Vérifie Docker / Docker Compose v2 / openssl
 - Demande le sous-domaine + domaine racine
-- Génère un `WEBHOOK_SECRET` (64 caractères hex)
+- Demande le sous-domaine MCP (défaut : `mcp.<domaine-racine>`)
+- Génère un `WEBHOOK_SECRET` (64 caractères hex) et un `MCP_TOKEN` (32 caractères hex)
 - Écrit un `.env` (chmod 600)
 - Crée le réseau `traefik_proxy` au besoin
 - Lance `docker compose up -d --build`
@@ -426,6 +428,80 @@ while True:
 
 ---
 
+## MCP Server — accès depuis Claude
+
+Le serveur MCP (Model Context Protocol) permet à Claude Desktop, Claude Web et Claude Mobile de lire la queue et d'y envoyer des messages **directement depuis une conversation**, sans écrire une ligne de code. Il suffit de connecter l'URL MCP dans les paramètres de Claude — les tools deviennent alors disponibles comme des capacités natives.
+
+### Architecture
+
+```
+Claude (desktop / web / mobile)
+        │  HTTPS + MCP token
+        ▼
+┌───────────────────┐
+│  cowork-mcp       │  service Docker, sous-domaine mcp.<DOMAIN>
+│  (MCP server)     │
+└────────┬──────────┘
+         │  HTTP interne (WEBHOOK_SECRET)
+         ▼
+┌───────────────────┐
+│  cowork-queue     │  file d'attente SQLite
+└────────┬──────────┘
+         │  POST /webhook  (n8n la produit / la consomme)
+         ▼
+┌───────────────────┐
+│       n8n         │  producteur & consommateur métier
+└───────────────────┘
+```
+
+### Installation
+
+Le script `install.sh` s'en occupe automatiquement : il demande le sous-domaine MCP, génère un `MCP_TOKEN` aléatoire (32 caractères hex), et les écrit dans le `.env`.
+
+**Pré-requis DNS** : créer un record **A** pour `mcp.<DOMAIN>` pointant vers l'IP de ton VPS (distinct du record `queue.<DOMAIN>`).
+
+### Configuration côté Claude
+
+1. Ouvrir **Paramètres → Connecteurs → Ajouter un connecteur personnalisé**
+2. Renseigner :
+   - **Nom** : `Cowork Queue` (ou tout autre nom)
+   - **URL** : `https://mcp.<DOMAIN>/t/<MCP_TOKEN>/mcp`
+3. Sauvegarder — les tools apparaissent immédiatement dans Claude.
+
+Le `MCP_TOKEN` se trouve dans le fichier `.env` du VPS, ligne `MCP_TOKEN=...`.
+
+### Tools disponibles
+
+| Tool | Effet |
+|------|-------|
+| `queue_status` | Health check du serveur. |
+| `queue_stats` | Compteurs pending/read, uptime, TTL. |
+| `queue_peek` | Voir 50 derniers messages sans consommer. |
+| `queue_next` | Dépile FIFO (destructif). |
+| `queue_by_id` | Récupère par correlation_id (peek ou claim). |
+| `queue_send` | Poste un message (déclenche n8n). |
+
+### Rotation du token
+
+Pour révoquer un token compromis ou faire une rotation régulière :
+
+```bash
+# Sur le VPS
+nano .env              # modifier MCP_TOKEN=<nouveau_token>
+docker compose up -d cowork-mcp
+```
+
+Puis mettre à jour l'URL dans Claude : **Paramètres → Connecteurs** → éditer l'URL avec le nouveau token.
+
+### Sécurité
+
+- Le token est embarqué dans l'URL (`/t/<token>/mcp`) et vérifié en **timing-safe** côté serveur.
+- Un token invalide renvoie `404` (pas de fuite d'information sur l'existence du endpoint).
+- Le transport est chiffré via **Traefik + Let's Encrypt** (TLS automatique).
+- Voir [`mcp/README.md`](mcp/README.md) pour les détails techniques d'implémentation.
+
+---
+
 ## Désinstallation
 
 ```bash
@@ -447,3 +523,5 @@ Retire le container, le volume (= toutes les données SQLite), l'image Docker, l
 | `DB_PATH`               | `/data/queue.db`  | Chemin SQLite (dans le volume)           |
 | `TTL_HOURS`             | `48`              | Rétention des messages                   |
 | `CLEANUP_INTERVAL_MIN`  | `60`              | Fréquence du cleanup auto                |
+| `MCP_DOMAIN`            | —                 | Sous-domaine du serveur MCP (ex : `mcp.example.com`) |
+| `MCP_TOKEN`             | —                 | Token d'accès MCP (32 caractères hex, dans l'URL) |

@@ -62,6 +62,19 @@ DOMAIN="$SUBDOMAIN.$ROOT_DOMAIN"
 echo "    → URL complète : https://$DOMAIN"
 echo
 
+info "Domaine MCP (serveur Model Context Protocol pour Claude)"
+echo "    → Crée un DNS A record pour ce sous-domaine vers l'IP de ton VPS."
+echo "    → Suggestion : mcp.$ROOT_DOMAIN"
+ask "Sous-domaine MCP" "mcp" MCP_SUBDOMAIN
+MCP_DOMAIN="$MCP_SUBDOMAIN.$ROOT_DOMAIN"
+echo "    → URL MCP complète : https://$MCP_DOMAIN"
+echo
+
+info "Token MCP"
+MCP_TOKEN="$(openssl rand -hex 16)"
+ok "MCP_TOKEN généré (32 caractères hex)"
+echo
+
 info "Secret d'authentification"
 read -rp "    Générer automatiquement un secret fort ? [Y/n] " yn
 if [[ "${yn:-Y}" =~ ^[nN] ]]; then
@@ -92,6 +105,10 @@ PORT=$PORT
 DB_PATH=/data/queue.db
 TTL_HOURS=$TTL
 CLEANUP_INTERVAL_MIN=$CLEAN
+
+# ── MCP Server distant ───────────────────────────────────
+MCP_DOMAIN=$MCP_DOMAIN
+MCP_TOKEN=$MCP_TOKEN
 EOF
 chmod 600 .env
 ok ".env créé (chmod 600)"
@@ -137,6 +154,19 @@ echo "    export WEBHOOK_SECRET=$SECRET"
 echo
 warn "Pré-requis côté infrastructure :"
 echo "    • DNS : $DOMAIN → IP de ce serveur"
+echo "    • DNS : $MCP_DOMAIN → IP de ce serveur"
 echo "    • Traefik actif avec entrypoint 'websecure' et certresolver 'letsencrypt'"
 echo "    • Port 443 ouvert sur le firewall"
+echo
+
+ok "Installation terminée."
+echo
+echo "    Queue webhook : https://$DOMAIN"
+echo "    MCP endpoint  : https://$MCP_DOMAIN/t/$MCP_TOKEN/mcp"
+echo
+info "Pour connecter Claude → Paramètres → Connecteurs personnalisés :"
+echo "    Nom : Cowork Queue"
+echo "    URL : https://$MCP_DOMAIN/t/$MCP_TOKEN/mcp"
+echo
+warn "N'oublie pas de créer un DNS A record pour $MCP_DOMAIN vers ton IP VPS."
 echo
