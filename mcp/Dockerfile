@@ -22,6 +22,9 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 COPY --from=build /app/dist ./dist
 
+# Fichiers statiques de l'interface admin
+COPY public ./public
+
 # Utilisateur non-root
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup && chown -R appuser:appgroup /app
 USER appuser

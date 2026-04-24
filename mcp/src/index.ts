@@ -7,10 +7,16 @@
 import express, { type Request, type Response, type NextFunction } from 'express'
 import cors from 'cors'
 import { randomUUID, timingSafeEqual } from 'node:crypto'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js'
 import { registerTools } from './tools.js'
+import { createAdminRouter } from './adminApi.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname  = path.dirname(__filename)
 
 // ─── CONFIG ──────────────────────────────────────────────────
 const PORT      = Number(process.env.PORT || 8080)
@@ -110,6 +116,17 @@ router.delete('/', handleRequest)
 
 // Path : /t/:token/mcp
 app.use('/t/:token/mcp', checkToken, router)
+
+// ─── ADMIN REST API ──────────────────────────────────────────
+// Path : /t/:token/api/*  (token déjà vérifié par checkToken)
+app.use('/t/:token/api', checkToken, createAdminRouter())
+
+// ─── ADMIN UI (SPA) ──────────────────────────────────────────
+// Path : /t/:token/ui  → sert public/index.html
+const publicDir = path.join(__dirname, '..', 'public')
+app.get('/t/:token/ui', checkToken, (_req, res) => {
+  res.sendFile(path.join(publicDir, 'index.html'))
+})
 
 // ─── GRACEFUL SHUTDOWN ───────────────────────────────────────
 process.on('SIGTERM', () => {
