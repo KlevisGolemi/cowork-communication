@@ -5,18 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cowork Queue — Admin</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Tailwind Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
-
-  <!-- Alpine.js -->
+  <!-- Alpine Collapse plugin MUST be before Alpine core -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   <script>
@@ -33,347 +29,465 @@
   </script>
 
   <style>
-    /* ── Base ── */
-    * { box-sizing: border-box; }
-    body { font-family: 'DM Sans', sans-serif; background: #0F172A; }
+    /* ═══ RESET & BASE ═══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; min-height: 100%; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      color: #F1F5F9;
+      /* ── BG PATTERN (efferd/bg-pattern) ── */
+      background-color: #020617;
+      background-image:
+        linear-gradient(to right, rgba(100,116,139,0.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(100,116,139,0.07) 1px, transparent 1px),
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(34,197,94,0.07) 0%, transparent 70%);
+      background-size: 40px 40px, 40px 40px, 100% 100%;
+      background-attachment: fixed;
+    }
     h1,h2,h3,h4,.font-heading { font-family: 'Space Grotesk', sans-serif; }
 
-    /* ── Glassmorphism layers ── */
+    /* ═══ GLASS ══════════════════════════════════════════════════════ */
     .glass {
-      background: rgba(30, 41, 59, 0.55);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.06);
     }
-    .glass-inner {
-      background: rgba(15, 23, 42, 0.6);
+    .glass-sm {
+      background: rgba(30, 41, 59, 0.5);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(255,255,255,0.05);
     }
 
-    /* ── MetricCard (from magic component) ── */
-    .metric-card-wrap { perspective: 1000px; }
-    .metric-card {
+    /* ═══ STAT CARD (magic: reui/statistics-card-7) ══════════════════
+       Orbiting white halo + rotating ray + gradient border
+    ════════════════════════════════════════════════════════════════════ */
+    .sc-wrap {
+      padding: 1px; /* gradient border thickness */
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%);
+      transition: background 0.4s ease;
+    }
+    .sc-wrap:hover {
+      background: linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.06) 100%);
+    }
+    .sc-inner {
       position: relative;
+      border-radius: 15px;
       overflow: hidden;
-      border-radius: 1rem;
-      border: 1px solid rgba(255,255,255,0.08);
-      transition: box-shadow 0.4s ease, transform 0.1s ease;
-      transform-style: preserve-3d;
-      cursor: default;
+      background: linear-gradient(135deg, #0f172a 0%, #0a1120 100%);
+      padding: 1.5rem;
+      height: 100%;
     }
-    .metric-card:hover { box-shadow: 0 0 30px rgba(34,197,94,0.15); }
-    .metric-card .mc-base {
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.90) 50%, rgba(15,23,42,0.95) 100%);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+
+    /* Orbiting halo */
+    .sc-halo {
+      position: absolute;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      filter: blur(18px);
+      pointer-events: none;
+      animation: halo-orbit 10s linear infinite;
     }
-    .metric-card .mc-shimmer {
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%);
+    @keyframes halo-orbit {
+      0%   { top: 10%; left: 10%; }
+      25%  { top: 10%; left: 80%; }
+      50%  { top: 75%; left: 80%; }
+      75%  { top: 75%; left: 10%; }
+      100% { top: 10%; left: 10%; }
     }
-    .metric-card .mc-glow {
-      position: absolute; inset: 0;
-      opacity: 0;
-      transition: opacity 0.4s ease;
+
+    /* Rotating ray */
+    .sc-ray {
+      position: absolute;
+      width: 220px; height: 50px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      filter: blur(24px);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: ray-spin 12s linear infinite;
     }
-    .metric-card:hover .mc-glow { opacity: 1; }
-    .mc-glow .glow-top {
-      position: absolute; top: 0; left: 25%; right: 25%; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(34,197,94,0.3), transparent);
+    @keyframes ray-spin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to   { transform: translate(-50%, -50%) rotate(360deg); }
     }
-    .mc-glow .glow-bottom {
-      position: absolute; bottom: 0; left: 25%; right: 25%; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(34,197,94,0.3), transparent);
-    }
-    .mc-glow .glow-left {
-      position: absolute; left: 0; top: 25%; bottom: 25%; width: 1px;
-      background: linear-gradient(180deg, transparent, rgba(34,197,94,0.3), transparent);
-    }
-    .mc-glow .glow-right {
-      position: absolute; right: 0; top: 25%; bottom: 25%; width: 1px;
-      background: linear-gradient(180deg, transparent, rgba(34,197,94,0.3), transparent);
-    }
-    .metric-card .mc-content {
-      position: relative; z-index: 10;
-      padding: 1.75rem;
-    }
-    .metric-card .mc-value {
+
+    /* Value text */
+    .sc-value {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 2.75rem;
+      font-size: 2.5rem;
       font-weight: 700;
       letter-spacing: -0.02em;
-      color: white;
-      transition: color 0.3s ease;
       line-height: 1;
+      color: white;
+      background: linear-gradient(135deg, #FFFFFF, #94A3B8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      transition: all 0.3s ease;
     }
-    .metric-card:hover .mc-value { color: rgba(34,197,94,0.9); }
-    .metric-card .mc-label {
+    .sc-wrap:hover .sc-value {
+      background: linear-gradient(135deg, #FFFFFF, #22C55E);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+    .sc-label {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-weight: 500;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-      transition: color 0.3s ease;
+      color: rgba(255,255,255,0.4);
       margin-top: 0.5rem;
+      transition: color 0.3s ease;
     }
-    .metric-card:hover .mc-label { color: rgba(255,255,255,0.75); }
-    .mc-icon-wrap {
-      display: flex; align-items: center; justify-content: center;
-      width: 3rem; height: 3rem;
+    .sc-wrap:hover .sc-label { color: rgba(255,255,255,0.65); }
+
+    /* Icon wrapper */
+    .sc-icon {
+      width: 2.75rem; height: 2.75rem;
       border-radius: 0.75rem;
-      border: 1px solid rgba(34,197,94,0.2);
-      background: rgba(34,197,94,0.1);
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid;
+      transition: all 0.3s ease;
       backdrop-filter: blur(4px);
-      transition: background 0.3s ease, border-color 0.3s ease;
-      color: #22C55E;
     }
-    .metric-card:hover .mc-icon-wrap {
-      background: rgba(34,197,94,0.15);
-      border-color: rgba(34,197,94,0.3);
+    .sc-icon-green  { background: rgba(34,197,94,0.1);  border-color: rgba(34,197,94,0.25);  color: #4ADE80; }
+    .sc-icon-blue   { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.25); color: #60A5FA; }
+    .sc-icon-red    { background: rgba(239,68,68,0.1);  border-color: rgba(239,68,68,0.25);  color: #F87171; }
+    .sc-icon-purple { background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.25); color: #C084FC; }
+
+    /* Trend badge */
+    .sc-trend {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: 1px solid rgba(34,197,94,0.3);
+      background: rgba(34,197,94,0.1);
+      color: #4ADE80;
     }
 
-    /* Color variants */
-    .mc-blue .mc-icon-wrap { border-color: rgba(59,130,246,0.2); background: rgba(59,130,246,0.1); color: #60A5FA; }
-    .mc-blue:hover .mc-icon-wrap { border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.18); }
-    .mc-blue:hover { box-shadow: 0 0 30px rgba(59,130,246,0.12); }
-    .mc-blue .mc-glow .glow-top,
-    .mc-blue .mc-glow .glow-bottom { background: linear-gradient(90deg, transparent, rgba(59,130,246,0.3), transparent); }
-    .mc-blue .mc-glow .glow-left,
-    .mc-blue .mc-glow .glow-right { background: linear-gradient(180deg, transparent, rgba(59,130,246,0.3), transparent); }
-    .mc-blue:hover .mc-value { color: rgba(96,165,250,0.9); }
-
-    .mc-red .mc-icon-wrap { border-color: rgba(239,68,68,0.2); background: rgba(239,68,68,0.1); color: #F87171; }
-    .mc-red:hover .mc-icon-wrap { border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.18); }
-    .mc-red:hover { box-shadow: 0 0 30px rgba(239,68,68,0.12); }
-    .mc-red .mc-glow .glow-top,
-    .mc-red .mc-glow .glow-bottom { background: linear-gradient(90deg, transparent, rgba(239,68,68,0.3), transparent); }
-    .mc-red .mc-glow .glow-left,
-    .mc-red .mc-glow .glow-right { background: linear-gradient(180deg, transparent, rgba(239,68,68,0.3), transparent); }
-    .mc-red:hover .mc-value { color: rgba(248,113,113,0.9); }
-
-    .mc-purple .mc-icon-wrap { border-color: rgba(168,85,247,0.2); background: rgba(168,85,247,0.1); color: #C084FC; }
-    .mc-purple:hover .mc-icon-wrap { border-color: rgba(168,85,247,0.35); background: rgba(168,85,247,0.18); }
-    .mc-purple:hover { box-shadow: 0 0 30px rgba(168,85,247,0.12); }
-    .mc-purple .mc-glow .glow-top,
-    .mc-purple .mc-glow .glow-bottom { background: linear-gradient(90deg, transparent, rgba(168,85,247,0.3), transparent); }
-    .mc-purple .mc-glow .glow-left,
-    .mc-purple .mc-glow .glow-right { background: linear-gradient(180deg, transparent, rgba(168,85,247,0.3), transparent); }
-    .mc-purple:hover .mc-value { color: rgba(192,132,252,0.9); }
-
-    /* ── Tabs ── */
+    /* ═══ TABS ═══════════════════════════════════════════════════════ */
     .tab-btn {
-      display: flex; align-items: center; gap: 0.5rem;
-      padding: 0.75rem 1rem;
+      display: flex; align-items: center; gap: 6px;
+      padding: 12px 14px;
       font-size: 0.875rem; font-weight: 500;
+      color: #475569;
       border-bottom: 2px solid transparent;
-      color: #64748B;
       transition: all 0.15s ease;
-      cursor: pointer; white-space: nowrap;
+      cursor: pointer;
+      white-space: nowrap;
+      background: transparent;
+      border-top: none; border-left: none; border-right: none;
     }
-    .tab-btn:hover { color: #CBD5E1; background: rgba(255,255,255,0.04); }
-    .tab-btn.active {
-      color: #22C55E;
-      border-bottom-color: rgba(34,197,94,0.6);
-      background: rgba(34,197,94,0.06);
-    }
+    .tab-btn:hover { color: #94A3B8; background: rgba(255,255,255,0.03); }
+    .tab-btn.active { color: #22C55E; border-bottom-color: rgba(34,197,94,0.55); background: rgba(34,197,94,0.05); }
 
-    /* ── Status badge ── */
-    .pulse-ring {
-      position: absolute; inset: -2px;
+    /* ═══ HEADER STATUS PULSE ════════════════════════════════════════ */
+    .status-dot {
+      width: 8px; height: 8px;
       border-radius: 50%;
-      animation: pulse-badge 2.5s ease infinite;
+      position: relative;
     }
-    @keyframes pulse-badge {
-      0%,100% { opacity: 0.6; transform: scale(1); }
-      50% { opacity: 0; transform: scale(2); }
+    .status-dot::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      animation: dot-pulse 2.5s ease-in-out infinite;
+    }
+    .status-dot.healthy { background: #22C55E; }
+    .status-dot.healthy::after { background: rgba(34,197,94,0.35); }
+    .status-dot.degraded { background: #EF4444; }
+    .status-dot.degraded::after { background: rgba(239,68,68,0.35); }
+    @keyframes dot-pulse {
+      0%,100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(2); opacity: 0; }
     }
 
-    /* ── JSON syntax ── */
-    .json-key    { color: #7DD3FC; }
-    .json-string { color: #86EFAC; }
-    .json-number { color: #FCA5A5; }
-    .json-bool   { color: #C4B5FD; }
-    .json-null   { color: #94A3B8; }
+    /* ═══ SYSTEM MONITOR ROWS (isaiahbjork/system-monitor) ══════════ */
+    .monitor-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      transition: background 0.2s ease;
+    }
+    .monitor-row:hover { background: rgba(255,255,255,0.04); }
+    .monitor-icon-wrap {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: #64748B;
+      transition: all 0.2s;
+    }
+    .monitor-row:hover .monitor-icon-wrap { background: rgba(255,255,255,0.08); color: #94A3B8; }
+    .monitor-label { font-size: 0.75rem; font-weight: 500; color: #64748B; }
+    .monitor-value { font-size: 0.75rem; font-family: 'Space Grotesk', monospace; color: #CBD5E1; }
 
-    /* ── Toggle switch ── */
+    /* Inline sparkline SVG */
+    .spark { overflow: visible; }
+    .spark-line { fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ═══ ACCORDION (ruixenui/ruixen-accordian01 — outline variant) ══
+       Smooth expand with border radius preservation
+    ════════════════════════════════════════════════════════════════════ */
+    .ac-item {
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color 0.2s ease;
+    }
+    .ac-item:hover { border-color: rgba(255,255,255,0.11); }
+    .ac-item.ac-open { border-color: rgba(255,255,255,0.1); }
+
+    .ac-trigger {
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+      padding: 14px 20px;
+      background: rgba(15, 23, 42, 0.6);
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s ease;
+    }
+    .ac-trigger:hover { background: rgba(30, 41, 59, 0.7); }
+    .ac-item.ac-open .ac-trigger { background: rgba(20, 30, 50, 0.8); }
+
+    .ac-chevron {
+      width: 16px; height: 16px;
+      color: #475569;
+      flex-shrink: 0;
+      transition: transform 0.25s ease, color 0.2s;
+    }
+    .ac-item.ac-open .ac-chevron { transform: rotate(180deg); color: #94A3B8; }
+
+    .ac-content {
+      background: rgba(10, 15, 30, 0.6);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 14px 20px 16px;
+    }
+
+    /* Method badges */
+    .badge {
+      padding: 3px 10px;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: 'Space Grotesk', monospace;
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+    }
+    .badge-get    { background: rgba(34,197,94,0.12);  color: #4ADE80; border: 1px solid rgba(34,197,94,0.25); }
+    .badge-post   { background: rgba(59,130,246,0.12); color: #60A5FA; border: 1px solid rgba(59,130,246,0.25); }
+    .badge-delete { background: rgba(239,68,68,0.12);  color: #F87171; border: 1px solid rgba(239,68,68,0.25); }
+
+    /* ═══ COPY FIELD ═════════════════════════════════════════════════ */
+    .copy-field {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      font-family: 'DM Mono', 'Fira Code', 'SF Mono', monospace;
+      color: #64748B;
+      overflow: hidden;
+    }
+    .copy-field span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ═══ BUTTONS ════════════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 14px;
+      border-radius: 9px;
+      font-size: 0.8rem; font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-ghost {
+      color: #64748B;
+      border-color: rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+    }
+    .btn-ghost:hover:not(:disabled) { color: #CBD5E1; background: rgba(255,255,255,0.07); }
+
+    .btn-primary {
+      color: #4ADE80;
+      border-color: rgba(34,197,94,0.25);
+      background: rgba(34,197,94,0.09);
+    }
+    .btn-primary:hover:not(:disabled) { background: rgba(34,197,94,0.15); }
+
+    .btn-icon {
+      width: 34px; height: 34px; padding: 0;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      color: #475569;
+      border-color: rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+    }
+    .btn-icon:hover:not(:disabled) { color: #94A3B8; background: rgba(255,255,255,0.07); }
+
+    /* ═══ INPUT ══════════════════════════════════════════════════════ */
+    .q-input {
+      width: 100%;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 8px 12px 8px 36px;
+      font-size: 0.875rem; color: #CBD5E1;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .q-input:focus { border-color: rgba(34,197,94,0.3); background: rgba(0,0,0,0.3); }
+    .q-input::placeholder { color: #334155; }
+
+    /* ═══ TOGGLE ═════════════════════════════════════════════════════ */
+    .toggle { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
     .toggle-track {
-      width: 2.5rem; height: 1.25rem;
-      border-radius: 9999px;
-      background: #334155;
-      border: 1px solid rgba(255,255,255,0.08);
+      width: 38px; height: 20px;
+      border-radius: 999px;
+      background: #1E293B;
+      border: 1px solid rgba(255,255,255,0.07);
       position: relative;
       transition: background 0.2s;
-      cursor: pointer;
     }
-    .toggle-track.on { background: rgba(34,197,94,0.45); border-color: rgba(34,197,94,0.3); }
+    .toggle-track.on { background: rgba(34,197,94,0.4); border-color: rgba(34,197,94,0.3); }
     .toggle-thumb {
-      position: absolute; top: 1px; left: 1px;
-      width: 1rem; height: 1rem;
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 14px; height: 14px;
       border-radius: 50%;
       background: white;
       box-shadow: 0 1px 3px rgba(0,0,0,0.4);
       transition: transform 0.2s;
     }
-    .toggle-track.on .toggle-thumb { transform: translateX(1.25rem); }
+    .toggle-track.on .toggle-thumb { transform: translateX(18px); }
 
-    /* ── Method badges ── */
-    .badge-get    { background: rgba(34,197,94,0.12);  color: #4ADE80; border: 1px solid rgba(34,197,94,0.25); }
-    .badge-post   { background: rgba(59,130,246,0.12); color: #60A5FA; border: 1px solid rgba(59,130,246,0.25); }
-    .badge-delete { background: rgba(239,68,68,0.12);  color: #F87171; border: 1px solid rgba(239,68,68,0.25); }
+    /* ═══ JSON SYNTAX ════════════════════════════════════════════════ */
+    .jk { color: #7DD3FC; }   /* key */
+    .js { color: #86EFAC; }   /* string value */
+    .jn { color: #FCA5A5; }   /* number */
+    .jb { color: #C4B5FD; }   /* boolean */
+    .jl { color: #94A3B8; }   /* null */
 
-    /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.15); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.3); }
-
-    /* ── Input ── */
-    .q-input {
-      width: 100%;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 0.75rem;
-      padding: 0.625rem 1rem 0.625rem 2.5rem;
-      font-size: 0.875rem;
-      color: #CBD5E1;
-      outline: none;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .q-input:focus { border-color: rgba(34,197,94,0.35); background: rgba(255,255,255,0.06); }
-    .q-input::placeholder { color: #475569; }
-
-    /* ── Copyable field ── */
-    .copy-field {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 0.75rem;
-      padding: 0.5rem 0.75rem;
-      font-family: 'DM Mono', 'SF Mono', 'Fira Code', monospace;
-      font-size: 0.75rem;
-      color: #94A3B8;
-      overflow: hidden;
-    }
-    .copy-field span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-    /* ── Btn ── */
-    .btn-ghost {
-      display: flex; align-items: center; gap: 0.4rem;
-      padding: 0.375rem 0.75rem;
-      border-radius: 0.625rem;
-      font-size: 0.8125rem; font-weight: 500;
-      color: #94A3B8;
-      border: 1px solid rgba(255,255,255,0.07);
-      background: transparent;
-      transition: all 0.15s;
-      cursor: pointer;
-    }
-    .btn-ghost:hover { color: #E2E8F0; background: rgba(255,255,255,0.07); }
-    .btn-green {
-      display: flex; align-items: center; gap: 0.4rem;
-      padding: 0.375rem 0.875rem;
-      border-radius: 0.625rem;
-      font-size: 0.8125rem; font-weight: 500;
-      color: #4ADE80;
-      border: 1px solid rgba(34,197,94,0.25);
-      background: rgba(34,197,94,0.1);
-      transition: all 0.15s;
-      cursor: pointer;
-    }
-    .btn-green:hover { background: rgba(34,197,94,0.18); }
-    .btn-green:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-icon {
-      width: 2.25rem; height: 2.25rem;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 0.625rem;
-      color: #64748B;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      transition: all 0.15s;
-      cursor: pointer;
-    }
-    .btn-icon:hover { color: #CBD5E1; background: rgba(255,255,255,0.09); }
-
-    /* ── Spin ── */
+    /* ═══ ANIMATIONS ═════════════════════════════════════════════════ */
     @keyframes spin { to { transform: rotate(360deg); } }
-    .spin { animation: spin 0.7s linear infinite; }
+    .spin { animation: spin 0.7s linear infinite; display: inline-block; }
 
-    /* ── Toast ── */
-    @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes toast-out { from { opacity: 1; } to { opacity: 0; } }
-    .toast-enter { animation: toast-in 0.2s ease forwards; }
-    .toast-leave { animation: toast-out 0.15s ease forwards; }
+    @keyframes fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-up { animation: fade-up 0.2s ease forwards; }
+    @keyframes fade-down { from { opacity: 1; } to { opacity: 0; transform: translateY(4px); } }
+    .fade-down { animation: fade-down 0.15s ease forwards; }
+
+    /* ═══ SCROLLBAR ══════════════════════════════════════════════════ */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.12); border-radius: 2px; }
+
+    /* ═══ SECTION TITLE ══════════════════════════════════════════════ */
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #334155;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, rgba(255,255,255,0.05), transparent);
+    }
+
+    /* Explorer empty state */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 3.5rem 1rem;
+      color: #334155;
+    }
+
+    /* Settings reveal field */
+    .secret-value {
+      flex: 1; min-width: 0;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      color: #475569;
+      letter-spacing: 0.04em;
+    }
+    .secret-value.revealed { color: #94A3B8; letter-spacing: 0; }
+
+    [x-cloak] { display: none !important; }
   </style>
 </head>
 
-<body class="min-h-screen text-slate-100">
+<body>
+<div x-data="app()" x-init="init()" x-cloak>
 
-<div id="app" x-data="app()" x-init="init()">
-
-  <!-- ═══ HEADER ═══════════════════════════════════════════════════ -->
-  <header class="glass sticky top-0 z-50 px-5 py-3.5">
+  <!-- ═══ HEADER ════════════════════════════════════════════════════ -->
+  <header class="glass sticky top-0 z-50 px-6 py-3.5">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-
-      <!-- Logo -->
+      <!-- Brand -->
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-xl flex items-center justify-center"
-             style="background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.25);">
-          <svg class="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+             style="background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.22);">
+          <svg class="w-4 h-4" style="color:#22C55E" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
           </svg>
         </div>
         <div>
           <p class="font-heading font-semibold text-sm text-white leading-tight">Cowork Queue</p>
-          <p class="text-xs text-slate-500 leading-tight">Admin Dashboard</p>
+          <p style="font-size:0.7rem; color:#475569; line-height:1.2" class="mt-0.5">Admin Dashboard</p>
         </div>
       </div>
 
-      <!-- Status + last update -->
+      <!-- Status + time -->
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-2">
-          <div class="relative w-2 h-2">
-            <div class="w-2 h-2 rounded-full"
-                 :class="sysStatus.healthy ? 'bg-green-400' : 'bg-red-400'"></div>
-            <div class="pulse-ring"
-                 :class="sysStatus.healthy ? 'bg-green-400' : 'bg-red-400'"
-                 style="opacity:0.4;"></div>
-          </div>
+          <div class="status-dot" :class="health.ok ? 'healthy' : 'degraded'"></div>
           <span class="text-xs font-medium"
-                :class="sysStatus.healthy ? 'text-green-400' : 'text-red-400'"
-                x-text="sysStatus.healthy ? 'Healthy' : 'Dégradé'"></span>
+                :class="health.ok ? 'text-green-400' : 'text-red-400'"
+                x-text="health.ok ? 'Healthy' : 'Dégradé'"></span>
         </div>
-        <span class="text-xs text-slate-600" x-text="lastUpdate"></span>
+        <span style="font-size:0.7rem; color:#1E293B" x-text="lastUpdate"></span>
       </div>
     </div>
   </header>
 
-  <!-- ═══ TAB BAR ═══════════════════════════════════════════════════ -->
-  <div class="glass border-t-0 border-b border-white/[0.05] px-5"
-       style="border-top:none; border-top-left-radius:0; border-top-right-radius:0; backdrop-filter:blur(14px);">
-    <div class="max-w-7xl mx-auto flex overflow-x-auto">
+  <!-- ═══ TAB BAR ══════════════════════════════════════════════════ -->
+  <div class="glass border-t-0 px-6 flex overflow-x-auto"
+       style="border-radius:0; border-top:none; border-left:none; border-right:none;">
+    <div class="max-w-7xl w-full mx-auto flex">
 
-      <button class="tab-btn" :class="tab==='dashboard' && 'active'" @click="tab='dashboard'">
+      <button class="tab-btn" :class="tab==='dashboard'&&'active'" @click="tab='dashboard'">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round"
-                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-2a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1v-6z"/>
         </svg>
         Dashboard
       </button>
 
-      <button class="tab-btn" :class="tab==='explorer' && 'active'" @click="tab='explorer'; tab==='explorer' && loadPeek()">
+      <button class="tab-btn" :class="tab==='explorer'&&'active'" @click="tab='explorer'; maybePeek()">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
         Queue Explorer
       </button>
 
-      <button class="tab-btn" :class="tab==='settings' && 'active'" @click="tab='settings'; loadConfig()">
+      <button class="tab-btn" :class="tab==='settings'&&'active'" @click="tab='settings'; ensureConfig()">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round"
                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -382,47 +496,44 @@
         Paramètres
       </button>
 
-      <button class="tab-btn" :class="tab==='api' && 'active'" @click="tab='api'; loadConfig()">
+      <button class="tab-btn" :class="tab==='api'&&'active'" @click="tab='api'; ensureConfig()">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
         </svg>
         Référence API
       </button>
+
     </div>
   </div>
 
-  <!-- ═══ MAIN CONTENT ══════════════════════════════════════════════ -->
-  <main class="px-5 py-6">
+  <!-- ═══ MAIN ══════════════════════════════════════════════════════ -->
+  <main class="px-6 py-7">
     <div class="max-w-7xl mx-auto">
 
-      <!-- ─── TAB 1: DASHBOARD ─────────────────────────────────── -->
+      <!-- ══════════════════════════════════════════════════════════
+           TAB 1 — DASHBOARD
+      ══════════════════════════════════════════════════════════════ -->
       <div x-show="tab==='dashboard'">
 
-        <!-- Header row -->
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <!-- Top bar -->
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
           <div>
             <h2 class="font-heading text-xl font-semibold text-white">Dashboard</h2>
-            <p class="text-sm text-slate-500 mt-0.5">Vue temps réel de la queue</p>
+            <p class="text-sm mt-0.5" style="color:#475569">Vue temps réel de la queue Cowork</p>
           </div>
           <div class="flex items-center gap-2.5">
-            <!-- Toggle -->
-            <div class="flex items-center gap-2 cursor-pointer" @click="toggleAutoRefresh()">
-              <div class="toggle-track" :class="autoRefresh && 'on'">
-                <div class="toggle-thumb"></div>
-              </div>
-              <span class="text-xs text-slate-400">Auto-refresh</span>
-            </div>
-            <!-- Interval select -->
+            <label class="toggle" @click="toggleAutoRefresh()">
+              <div class="toggle-track" :class="autoRefresh&&'on'"><div class="toggle-thumb"></div></div>
+              <span class="text-xs" style="color:#475569">Auto-refresh</span>
+            </label>
             <select x-model.number="refreshSec" @change="restartTimer()"
-                    class="glass-inner text-xs text-slate-300 px-2.5 py-1.5 rounded-lg cursor-pointer outline-none">
+                    class="glass-sm text-xs px-2.5 py-1.5 rounded-lg cursor-pointer outline-none" style="color:#94A3B8">
               <option value="10">10s</option>
               <option value="30">30s</option>
               <option value="60">1m</option>
-              <option value="300">5m</option>
             </select>
-            <!-- Refresh btn -->
-            <button class="btn-ghost" @click="refreshDashboard()" :disabled="loading.dash">
-              <svg class="w-3.5 h-3.5" :class="loading.dash && 'spin'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <button class="btn btn-ghost" @click="refreshDash()" :disabled="loading.dash">
+              <svg class="w-3.5 h-3.5" :class="loading.dash&&'spin'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
               </svg>
               Refresh
@@ -430,145 +541,186 @@
           </div>
         </div>
 
-        <!-- ── 4 MetricCards ── -->
+        <!-- ── 4 Stat Cards (magic: statistics-card-7 + moving halo) ── -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
 
-          <!-- Queue depth — blue -->
-          <div class="metric-card-wrap" onmousemove="tilt(event,this)" onmouseleave="resetTilt(this)">
-            <div class="metric-card mc-blue">
-              <div class="mc-base"></div>
-              <div class="mc-shimmer"></div>
-              <div class="mc-glow">
-                <div class="glow-top"></div><div class="glow-bottom"></div>
-                <div class="glow-left"></div><div class="glow-right"></div>
-              </div>
-              <div class="mc-content">
+          <!-- Queue depth -->
+          <div class="sc-wrap">
+            <div class="sc-inner">
+              <div class="sc-halo"></div>
+              <div class="sc-ray"></div>
+              <div class="relative z-10">
                 <div class="flex items-start justify-between mb-5">
-                  <div class="mc-icon-wrap">
+                  <div class="sc-icon sc-icon-blue">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                     </svg>
                   </div>
+                  <span class="sc-trend" x-show="m.depth > 0">
+                    <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <span x-text="m.depth"></span>
+                  </span>
                 </div>
-                <div class="mc-value" x-text="metrics.depth ?? '--'"></div>
-                <div class="mc-label">Messages en attente</div>
+                <div class="sc-value" x-text="m.depth ?? '--'"></div>
+                <div class="sc-label">En attente</div>
               </div>
             </div>
           </div>
 
-          <!-- Processed — green -->
-          <div class="metric-card-wrap" onmousemove="tilt(event,this)" onmouseleave="resetTilt(this)">
-            <div class="metric-card">
-              <div class="mc-base"></div>
-              <div class="mc-shimmer"></div>
-              <div class="mc-glow">
-                <div class="glow-top"></div><div class="glow-bottom"></div>
-                <div class="glow-left"></div><div class="glow-right"></div>
-              </div>
-              <div class="mc-content">
+          <!-- Processed -->
+          <div class="sc-wrap">
+            <div class="sc-inner">
+              <div class="sc-halo" style="animation-delay:-3s"></div>
+              <div class="sc-ray" style="animation-delay:-4s"></div>
+              <div class="relative z-10">
                 <div class="flex items-start justify-between mb-5">
-                  <div class="mc-icon-wrap">
+                  <div class="sc-icon sc-icon-green">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                   </div>
                 </div>
-                <div class="mc-value" x-text="fmtNum(metrics.processed)"></div>
-                <div class="mc-label">Traités au total</div>
+                <div class="sc-value" x-text="fmtNum(m.processed)"></div>
+                <div class="sc-label">Traités</div>
               </div>
             </div>
           </div>
 
-          <!-- Errors — red -->
-          <div class="metric-card-wrap" onmousemove="tilt(event,this)" onmouseleave="resetTilt(this)">
-            <div class="metric-card mc-red">
-              <div class="mc-base"></div>
-              <div class="mc-shimmer"></div>
-              <div class="mc-glow">
-                <div class="glow-top"></div><div class="glow-bottom"></div>
-                <div class="glow-left"></div><div class="glow-right"></div>
-              </div>
-              <div class="mc-content">
+          <!-- Total -->
+          <div class="sc-wrap">
+            <div class="sc-inner">
+              <div class="sc-halo" style="animation-delay:-6s"></div>
+              <div class="sc-ray" style="animation-delay:-8s"></div>
+              <div class="relative z-10">
                 <div class="flex items-start justify-between mb-5">
-                  <div class="mc-icon-wrap">
+                  <div class="sc-icon sc-icon-purple">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
                     </svg>
                   </div>
                 </div>
-                <div class="mc-value" x-text="metrics.failed ?? '0'"></div>
-                <div class="mc-label">Erreurs</div>
+                <div class="sc-value" x-text="fmtNum(m.total)"></div>
+                <div class="sc-label">Total reçus</div>
               </div>
             </div>
           </div>
 
-          <!-- Uptime — purple -->
-          <div class="metric-card-wrap" onmousemove="tilt(event,this)" onmouseleave="resetTilt(this)">
-            <div class="metric-card mc-purple">
-              <div class="mc-base"></div>
-              <div class="mc-shimmer"></div>
-              <div class="mc-glow">
-                <div class="glow-top"></div><div class="glow-bottom"></div>
-                <div class="glow-left"></div><div class="glow-right"></div>
-              </div>
-              <div class="mc-content">
+          <!-- Uptime -->
+          <div class="sc-wrap">
+            <div class="sc-inner">
+              <div class="sc-halo" style="animation-delay:-9s"></div>
+              <div class="sc-ray" style="animation-delay:-2s"></div>
+              <div class="relative z-10">
                 <div class="flex items-start justify-between mb-5">
-                  <div class="mc-icon-wrap">
+                  <div class="sc-icon sc-icon-purple" style="background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.25);color:#C084FC">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                   </div>
                 </div>
-                <div class="mc-value" style="font-size:2rem" x-text="fmtUptime(metrics.uptimeSec)"></div>
-                <div class="mc-label">Uptime serveur</div>
+                <div class="sc-value" style="font-size:1.9rem" x-text="fmtUptime(m.uptime)"></div>
+                <div class="sc-label">Uptime</div>
               </div>
             </div>
           </div>
 
-        </div><!-- /grid -->
+        </div><!-- /stat cards -->
 
-        <!-- ── Sparkline + System Status ── -->
+        <!-- ── Sparkline + System Monitor ── -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-          <!-- Sparkline -->
+          <!-- Sparkline (Chart.js) -->
           <div class="glass rounded-2xl p-5 lg:col-span-2">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="font-heading text-sm font-semibold text-slate-300">Profondeur de queue</h3>
-              <span class="text-xs text-slate-600">20 dernières mesures</span>
+              <p class="section-title w-full">Profondeur de queue <span class="font-sans normal-case font-normal" style="letter-spacing:0;text-transform:none;color:#1E293B">— 20 dernières mesures</span></p>
             </div>
-            <div class="h-28">
+            <div style="height:120px">
               <canvas id="sparkChart"></canvas>
             </div>
           </div>
 
-          <!-- System status -->
-          <div class="glass rounded-2xl p-5">
-            <h3 class="font-heading text-sm font-semibold text-slate-300 mb-4">État du système</h3>
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-slate-500">Webhook Queue</span>
-                <div class="flex items-center gap-1.5">
-                  <div class="w-1.5 h-1.5 rounded-full" :class="sysStatus.healthy ? 'bg-green-400' : 'bg-red-400'"></div>
-                  <span class="text-sm font-medium" :class="sysStatus.healthy ? 'text-green-400' : 'text-red-400'"
-                        x-text="sysStatus.healthy ? 'Online' : 'Dégradé'"></span>
+          <!-- System Monitor panel (isaiahbjork/system-monitor — adapted) -->
+          <div class="glass rounded-2xl p-4">
+            <p class="section-title mb-3">État du système</p>
+
+            <div class="space-y-0.5">
+              <!-- Queue service row -->
+              <div class="monitor-row">
+                <div class="monitor-icon-wrap">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="monitor-label">Webhook Queue</span>
+                    <div class="flex items-center gap-1.5">
+                      <div class="w-1.5 h-1.5 rounded-full" :class="health.ok ? 'bg-green-400' : 'bg-red-400'"></div>
+                      <span class="monitor-value" :class="health.ok ? 'text-green-400' : 'text-red-400'"
+                            x-text="health.ok ? 'Online' : 'Error'"></span>
+                    </div>
+                  </div>
+                  <!-- Mini sparkline SVG -->
+                  <svg class="spark w-full" height="16" preserveAspectRatio="none">
+                    <polyline class="spark-line" :style="`stroke:${health.ok ? '#22C55E' : '#EF4444'}; opacity:0.5`"
+                              :points="sparkPoints(sparkData, 100, 16)"/>
+                  </svg>
                 </div>
               </div>
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-slate-500">MCP Server</span>
-                <div class="flex items-center gap-1.5">
-                  <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
-                  <span class="text-sm font-medium text-green-400">Online</span>
+
+              <!-- MCP Server row -->
+              <div class="monitor-row">
+                <div class="monitor-icon-wrap">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between">
+                    <span class="monitor-label">MCP Server</span>
+                    <div class="flex items-center gap-1.5">
+                      <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                      <span class="monitor-value text-green-400">Online</span>
+                    </div>
+                  </div>
+                  <div class="mt-1.5 text-xs" style="color:#1E293B">
+                    Uptime : <span style="color:#334155" x-text="fmtUptime(health.mcpUptime)"></span>
+                  </div>
                 </div>
               </div>
-              <div class="h-px bg-white/[0.05] my-1"></div>
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-slate-500">Uptime MCP</span>
-                <span class="text-sm text-slate-300" x-text="fmtUptime(sysStatus.mcpUptime)"></span>
+
+              <div class="h-px mx-3 my-1" style="background:rgba(255,255,255,0.04)"></div>
+
+              <!-- TTL info -->
+              <div class="monitor-row">
+                <div class="monitor-icon-wrap">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <span class="monitor-label">TTL messages</span>
+                    <span class="monitor-value" x-text="m.ttl ? m.ttl + 'h' : '--'"></span>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-slate-500">Dernière MAJ</span>
-                <span class="text-sm text-slate-300" x-text="lastUpdate"></span>
+
+              <!-- Last update -->
+              <div class="monitor-row">
+                <div class="monitor-icon-wrap">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center justify-between">
+                    <span class="monitor-label">Dernière MAJ</span>
+                    <span class="monitor-value" x-text="lastUpdate"></span>
+                  </div>
+                </div>
               </div>
+
             </div>
           </div>
 
@@ -576,16 +728,18 @@
       </div><!-- /dashboard -->
 
 
-      <!-- ─── TAB 2: QUEUE EXPLORER ────────────────────────────── -->
+      <!-- ══════════════════════════════════════════════════════════
+           TAB 2 — QUEUE EXPLORER
+      ══════════════════════════════════════════════════════════════ -->
       <div x-show="tab==='explorer'" style="display:none">
 
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
           <div>
             <h2 class="font-heading text-xl font-semibold text-white">Queue Explorer</h2>
-            <p class="text-sm text-slate-500 mt-0.5">Lecture seule — aucun message n'est consommé (peek)</p>
+            <p class="text-sm mt-0.5" style="color:#475569">Lecture seule — aucun message n'est consommé (peek)</p>
           </div>
-          <button class="btn-ghost" @click="loadPeek()" :disabled="loading.explorer">
-            <svg class="w-3.5 h-3.5" :class="loading.explorer && 'spin'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <button class="btn btn-ghost" @click="loadPeek()" :disabled="loading.explorer">
+            <svg class="w-3.5 h-3.5" :class="loading.explorer&&'spin'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
             </svg>
             Actualiser
@@ -596,141 +750,151 @@
         <div class="glass rounded-2xl p-4 mb-4">
           <div class="flex gap-2.5">
             <div class="relative flex-1">
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color:#334155"
+                   fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
               <input type="text" class="q-input" x-model="explorerQ"
                      @keyup.enter="searchById()"
                      placeholder="Rechercher par Correlation ID…">
             </div>
-            <button class="btn-green" @click="searchById()" :disabled="!explorerQ || loading.explorer">
+            <button class="btn btn-primary" @click="searchById()" :disabled="!explorerQ||loading.explorer">
               Rechercher
             </button>
-            <button class="btn-ghost" @click="explorerQ=''; explorerSearch=null; loadPeek()" x-show="explorerQ">
-              Réinitialiser
+            <button class="btn btn-ghost" x-show="explorerQ" @click="explorerQ=''; explorerSearched=false; loadPeek()">
+              ×
             </button>
           </div>
         </div>
 
         <!-- Message panel -->
         <div class="glass rounded-2xl overflow-hidden">
-
-          <!-- Panel header -->
-          <div class="px-5 py-3.5 border-b border-white/[0.05] flex items-center justify-between">
-            <h3 class="font-heading text-sm font-semibold text-slate-300">
-              <span x-text="explorerSearch ? 'Résultat — recherche par ID' : 'Tête de queue (peek)'"></span>
-            </h3>
-            <span class="text-xs text-slate-600 bg-white/[0.04] px-2.5 py-0.5 rounded-full">non-destructif</span>
+          <div class="px-5 py-3.5 flex items-center justify-between"
+               style="border-bottom:1px solid rgba(255,255,255,0.04)">
+            <p class="section-title" style="font-size:0.65rem">
+              <span x-text="explorerSearched ? 'Recherche par ID' : 'Tête de queue (peek)'"></span>
+            </p>
+            <span style="font-size:0.7rem; color:#1E293B; background:rgba(255,255,255,0.03); padding:2px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.05)">
+              non-destructif
+            </span>
           </div>
 
           <!-- Loading -->
           <div x-show="loading.explorer" class="flex items-center justify-center py-16">
-            <svg class="w-6 h-6 text-slate-600 spin" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            <svg class="w-5 h-5 spin" style="color:#334155" fill="none" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" style="opacity:0.2"></circle>
+              <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" style="opacity:0.7"></path>
             </svg>
           </div>
 
           <!-- Empty -->
-          <div x-show="!loading.explorer && !explorerMsg" class="flex flex-col items-center justify-center py-14 text-slate-600">
-            <svg class="w-12 h-12 mb-3 opacity-25" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+          <div x-show="!loading.explorer && !explorerMsg" class="empty-state">
+            <svg class="w-12 h-12 mb-3" style="opacity:0.12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
             </svg>
             <p class="text-sm">Queue vide ou message non trouvé</p>
-            <button class="mt-3 text-xs text-green-500 hover:text-green-400 cursor-pointer" @click="loadPeek()">
-              Recharger →
-            </button>
+            <button class="mt-3 text-xs cursor-pointer" style="color:#22C55E" @click="loadPeek()">Recharger →</button>
           </div>
 
           <!-- Message content -->
           <div x-show="!loading.explorer && explorerMsg" class="p-5">
             <template x-if="explorerMsg">
               <div>
-                <!-- Meta row -->
-                <div class="flex flex-wrap items-center gap-4 mb-5">
+                <!-- Meta -->
+                <div class="flex flex-wrap items-start gap-5 mb-5">
                   <div>
-                    <p class="text-xs text-slate-600 mb-1">Correlation ID</p>
+                    <p class="text-xs mb-1" style="color:#334155">Correlation ID</p>
                     <div class="flex items-center gap-2">
-                      <code class="text-sm font-mono text-blue-300 bg-blue-500/10 px-2.5 py-0.5 rounded-lg max-w-xs truncate block"
+                      <code class="text-sm font-mono px-2.5 py-0.5 rounded-lg truncate max-w-xs block"
+                            style="color:#7DD3FC; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.12)"
                             x-text="explorerMsg.correlationId ?? 'N/A'"></code>
-                      <button class="btn-icon" @click="copy(explorerMsg.correlationId)" title="Copier">
+                      <button class="btn btn-icon" @click="copy(explorerMsg.correlationId)" title="Copier ID">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                         </svg>
                       </button>
                     </div>
                   </div>
-                  <div x-show="explorerMsg.receivedAt">
-                    <p class="text-xs text-slate-600 mb-1">Reçu le</p>
-                    <span class="text-sm text-slate-400" x-text="explorerMsg.receivedAt"></span>
+                  <div x-show="explorerMsg.createdAt">
+                    <p class="text-xs mb-1" style="color:#334155">Reçu le</p>
+                    <p class="text-sm" style="color:#64748B" x-text="explorerMsg.createdAt"></p>
                   </div>
                   <div>
-                    <p class="text-xs text-slate-600 mb-1">Source</p>
-                    <span class="text-xs px-2.5 py-0.5 rounded-full"
-                          :class="explorerSearch ? 'bg-purple-500/12 text-purple-300' : 'bg-blue-500/12 text-blue-300'"
-                          x-text="explorerSearch ? 'Recherche ID' : 'Tête de queue'"></span>
+                    <p class="text-xs mb-1" style="color:#334155">Statut</p>
+                    <span class="text-xs px-2.5 py-0.5 rounded-full font-medium"
+                          :class="explorerMsg.status==='read' ? 'text-slate-400 bg-slate-800' : 'text-green-400 bg-green-900/30'"
+                          x-text="explorerMsg.status ?? '—'"></span>
+                  </div>
+                  <div x-show="explorerMsg.source">
+                    <p class="text-xs mb-1" style="color:#334155">Source</p>
+                    <span class="text-xs px-2.5 py-0.5 rounded-full text-purple-300"
+                          style="background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.15)"
+                          x-text="explorerMsg.source"></span>
                   </div>
                 </div>
 
-                <!-- Payload -->
+                <!-- JSON Payload -->
                 <div>
                   <div class="flex items-center justify-between mb-2">
-                    <p class="text-xs text-slate-600">Payload JSON</p>
-                    <button class="btn-ghost text-xs" @click="copy(JSON.stringify(explorerMsg.payload, null, 2))">
+                    <p class="section-title">Payload JSON</p>
+                    <button class="btn btn-ghost text-xs" @click="copy(JSON.stringify(explorerMsg.payload, null, 2))">
                       <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                       </svg>
                       Copier JSON
                     </button>
                   </div>
-                  <pre class="glass-inner rounded-xl p-4 text-sm overflow-x-auto max-h-96 leading-relaxed"
+                  <pre style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:14px 16px; font-size:0.8rem; line-height:1.6; overflow-x:auto; max-height:400px; font-family:'DM Mono','Fira Code',monospace"
                        x-html="syntaxHL(JSON.stringify(explorerMsg.payload, null, 2))"></pre>
                 </div>
               </div>
             </template>
           </div>
-
         </div>
       </div><!-- /explorer -->
 
 
-      <!-- ─── TAB 3: PARAMÈTRES ─────────────────────────────────── -->
+      <!-- ══════════════════════════════════════════════════════════
+           TAB 3 — PARAMÈTRES
+      ══════════════════════════════════════════════════════════════ -->
       <div x-show="tab==='settings'" style="display:none">
 
         <div class="mb-5">
           <h2 class="font-heading text-xl font-semibold text-white">Paramètres</h2>
-          <p class="text-sm text-slate-500 mt-0.5">Secrets, URLs et configuration</p>
+          <p class="text-sm mt-0.5" style="color:#475569">Secrets, URLs et configuration du système</p>
         </div>
 
         <!-- Secrets -->
         <div class="glass rounded-2xl p-5 mb-4">
-          <h3 class="font-heading text-sm font-semibold text-slate-200 mb-4 flex items-center gap-2">
-            <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <p class="section-title mb-4">
+            <svg class="w-3.5 h-3.5 text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
             </svg>
             Secrets d'authentification
-          </h3>
-          <div class="space-y-4">
+          </p>
 
+          <div class="space-y-4">
             <!-- Webhook Secret -->
             <div>
-              <label class="text-xs text-slate-500 mb-1.5 block">Webhook Secret <span class="text-slate-600">(header x-webhook-secret)</span></label>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs" style="color:#475569">Webhook Secret <span style="color:#1E293B">(x-webhook-secret)</span></label>
+              </div>
               <div class="flex items-center gap-2">
                 <div class="copy-field flex-1">
-                  <span x-text="reveal.webhook ? cfg.webhookSecret : '•'.repeat(32)"></span>
+                  <span class="secret-value" :class="reveal.webhook && 'revealed'"
+                        x-text="reveal.webhook ? cfg.webhookSecret : '•'.repeat(32)"></span>
                 </div>
-                <button class="btn-icon" @click="toggleReveal('webhook')" :title="reveal.webhook ? 'Masquer' : 'Révéler'">
+                <button class="btn btn-icon" @click="toggleReveal('webhook')">
                   <svg x-show="!reveal.webhook" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                   </svg>
                   <svg x-show="reveal.webhook" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    <path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
                   </svg>
                 </button>
-                <button class="btn-icon" :disabled="!cfg.webhookSecret" @click="copy(cfg.webhookSecret)" title="Copier">
+                <button class="btn btn-icon" :disabled="!cfg.webhookSecret" @click="copy(cfg.webhookSecret)">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                   </svg>
                 </button>
               </div>
@@ -738,102 +902,101 @@
 
             <!-- MCP Token -->
             <div>
-              <label class="text-xs text-slate-500 mb-1.5 block">MCP Token <span class="text-slate-600">(embarqué dans l'URL)</span></label>
+              <label class="text-xs block mb-1.5" style="color:#475569">MCP Token <span style="color:#1E293B">(URL embarqué)</span></label>
               <div class="flex items-center gap-2">
                 <div class="copy-field flex-1">
-                  <span x-text="reveal.mcp ? cfg.mcpToken : '•'.repeat(32)"></span>
+                  <span class="secret-value" :class="reveal.mcp && 'revealed'"
+                        x-text="reveal.mcp ? cfg.mcpToken : '•'.repeat(32)"></span>
                 </div>
-                <button class="btn-icon" @click="toggleReveal('mcp')" :title="reveal.mcp ? 'Masquer' : 'Révéler'">
+                <button class="btn btn-icon" @click="toggleReveal('mcp')">
                   <svg x-show="!reveal.mcp" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                   </svg>
                   <svg x-show="reveal.mcp" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    <path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
                   </svg>
                 </button>
-                <button class="btn-icon" :disabled="!cfg.mcpToken" @click="copy(cfg.mcpToken)" title="Copier">
+                <button class="btn btn-icon" :disabled="!cfg.mcpToken" @click="copy(cfg.mcpToken)">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                   </svg>
                 </button>
               </div>
             </div>
-
           </div>
         </div><!-- /secrets -->
 
         <!-- URLs -->
         <div class="glass rounded-2xl p-5 mb-4">
-          <h3 class="font-heading text-sm font-semibold text-slate-200 mb-4 flex items-center gap-2">
-            <svg class="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          <p class="section-title mb-4">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#60A5FA" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
             </svg>
             URLs d'accès
-          </h3>
+          </p>
           <div class="space-y-4">
 
-            <!-- MCP Connector URL -->
+            <!-- MCP Connector -->
             <div>
-              <label class="text-xs text-slate-500 mb-1.5 block">
-                MCP Connector URL
-                <span class="ml-1.5 text-green-500">Claude Web · Desktop · iOS · Android</span>
-              </label>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs" style="color:#475569">MCP Connector URL</label>
+                <span class="text-xs font-medium" style="color:#4ADE80">Claude Web · Desktop · iOS · Android</span>
+              </div>
               <div class="flex items-center gap-2">
                 <div class="copy-field flex-1">
                   <span x-text="cfg.mcpConnectorUrl || 'Chargement…'"></span>
                 </div>
-                <button class="btn-green" :disabled="!cfg.mcpConnectorUrl" @click="copy(cfg.mcpConnectorUrl)">
+                <button class="btn btn-primary" :disabled="!cfg.mcpConnectorUrl" @click="copy(cfg.mcpConnectorUrl)">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                   </svg>
                   Copier
                 </button>
               </div>
-              <p class="text-xs text-slate-600 mt-1.5">Claude → Paramètres → Connecteurs → Ajouter un connecteur personnalisé</p>
+              <p class="text-xs mt-1.5" style="color:#1E293B">Claude → Paramètres → Connecteurs → Ajouter un connecteur personnalisé</p>
             </div>
 
             <!-- Webhook API URL -->
             <div>
-              <label class="text-xs text-slate-500 mb-1.5 block">
-                Webhook API URL
-                <span class="ml-1.5 text-orange-400">n8n · Make · Zapier</span>
-              </label>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs" style="color:#475569">Webhook API URL</label>
+                <span class="text-xs font-medium" style="color:#FB923C">n8n · Make · Zapier</span>
+              </div>
               <div class="flex items-center gap-2">
                 <div class="copy-field flex-1">
-                  <span x-text="cfg.webhookApiUrl || 'Non configuré — DOMAIN manquant dans .env'"></span>
+                  <span x-text="cfg.webhookApiUrl || 'Non configuré (DOMAIN manquant)'"></span>
                 </div>
-                <button class="btn-ghost" :disabled="!cfg.webhookApiUrl" @click="copy(cfg.webhookApiUrl)">
+                <button class="btn btn-ghost" :disabled="!cfg.webhookApiUrl" @click="copy(cfg.webhookApiUrl)">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                   </svg>
                   Copier
                 </button>
               </div>
-              <p class="text-xs text-slate-600 mt-1.5">
-                Ajouter le header <code class="font-mono text-slate-500">x-webhook-secret: &lt;secret&gt;</code> dans n8n
+              <p class="text-xs mt-1.5 font-mono" style="color:#1E293B">
+                Header requis : <span style="color:#334155">x-webhook-secret: &lt;secret&gt;</span>
               </p>
             </div>
 
           </div>
         </div><!-- /urls -->
 
-        <!-- Refresh settings -->
+        <!-- Refresh interval -->
         <div class="glass rounded-2xl p-5">
-          <h3 class="font-heading text-sm font-semibold text-slate-200 mb-4 flex items-center gap-2">
-            <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <p class="section-title mb-4">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#64748B" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
             Affichage
-          </h3>
+          </p>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-slate-300">Intervalle de rafraîchissement</p>
-              <p class="text-xs text-slate-600 mt-0.5">Utilisé par le Dashboard en mode auto-refresh</p>
+              <p class="text-sm" style="color:#94A3B8">Intervalle de rafraîchissement</p>
+              <p class="text-xs mt-0.5" style="color:#334155">Dashboard en mode auto-refresh</p>
             </div>
             <select x-model.number="refreshSec" @change="restartTimer()"
-                    class="glass-inner text-sm text-slate-300 px-3 py-2 rounded-xl cursor-pointer outline-none border border-white/[0.06]">
+                    class="glass-sm text-sm px-3 py-2 rounded-xl cursor-pointer outline-none" style="color:#94A3B8; border:1px solid rgba(255,255,255,0.07)">
               <option value="10">10 secondes</option>
               <option value="30">30 secondes</option>
               <option value="60">1 minute</option>
@@ -841,48 +1004,60 @@
             </select>
           </div>
         </div>
-
       </div><!-- /settings -->
 
 
-      <!-- ─── TAB 4: API REFERENCE ──────────────────────────────── -->
+      <!-- ══════════════════════════════════════════════════════════
+           TAB 4 — RÉFÉRENCE API
+           Accordion (ruixenui/ruixen-accordian01 — outline variant)
+      ══════════════════════════════════════════════════════════════ -->
       <div x-show="tab==='api'" style="display:none">
 
         <div class="mb-5">
           <h2 class="font-heading text-xl font-semibold text-white">Référence API</h2>
-          <p class="text-sm text-slate-500 mt-0.5">Toutes les commandes curl, pré-remplies avec ton secret</p>
+          <p class="text-sm mt-0.5" style="color:#475569">Toutes les commandes curl, pré-remplies avec ton secret webhook</p>
         </div>
 
-        <div class="space-y-3">
+        <div class="space-y-2.5" x-data="{ open: null }">
           <template x-for="cmd in apiCmds()" :key="cmd.id">
-            <div class="glass rounded-2xl overflow-hidden">
-              <!-- header -->
-              <div class="px-5 py-3.5 flex items-start justify-between gap-4 border-b border-white/[0.04]">
-                <div class="flex items-start gap-3">
-                  <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold font-mono flex-shrink-0 mt-0.5"
-                        :class="{
-                          'badge-get':    cmd.method==='GET',
-                          'badge-post':   cmd.method==='POST',
-                          'badge-delete': cmd.method==='DELETE'
-                        }"
-                        x-text="cmd.method"></span>
-                  <div>
-                    <p class="text-sm font-medium text-slate-200" x-text="cmd.name"></p>
-                    <p class="text-xs text-slate-600 mt-0.5" x-text="cmd.desc"></p>
+            <div class="ac-item" :class="open===cmd.id && 'ac-open'">
+
+              <!-- Trigger -->
+              <button class="ac-trigger" @click="open = open===cmd.id ? null : cmd.id">
+                <div class="flex items-start gap-3 flex-1 min-w-0">
+                  <span class="badge mt-0.5" :class="`badge-${cmd.method.toLowerCase()}`" x-text="cmd.method"></span>
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium text-slate-200 leading-tight" x-text="cmd.name"></p>
+                    <p class="text-xs mt-0.5 truncate" style="color:#334155" x-text="cmd.desc"></p>
                   </div>
                 </div>
-                <button class="btn-ghost flex-shrink-0" @click="copy(cmd.curl)">
-                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <code class="hidden sm:block text-xs font-mono px-2 py-0.5 rounded"
+                        style="color:#475569; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05)"
+                        x-text="cmd.endpoint"></code>
+                  <svg class="ac-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
                   </svg>
-                  Copier curl
-                </button>
+                </div>
+              </button>
+
+              <!-- Content (x-collapse) -->
+              <div x-show="open===cmd.id" x-collapse>
+                <div class="ac-content">
+                  <div class="flex items-center justify-between mb-2.5">
+                    <p class="section-title text-xs">Commande curl</p>
+                    <button class="btn btn-ghost text-xs" @click="copy(cmd.curl)">
+                      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                      </svg>
+                      Copier
+                    </button>
+                  </div>
+                  <pre style="font-size:0.75rem; font-family:'DM Mono','Fira Code',monospace; color:#64748B; overflow-x:auto; white-space:pre-wrap; word-break:break-all; line-height:1.6"
+                       x-text="cmd.curl"></pre>
+                </div>
               </div>
-              <!-- curl -->
-              <div class="px-5 py-3">
-                <pre class="text-xs font-mono text-slate-500 overflow-x-auto whitespace-pre-wrap break-all leading-relaxed"
-                     x-text="cmd.curl"></pre>
-              </div>
+
             </div>
           </template>
         </div>
@@ -891,17 +1066,17 @@
     </div>
   </main>
 
-  <!-- ═══ TOAST ═══════════════════════════════════════════════════ -->
+  <!-- ═══ TOAST ════════════════════════════════════════════════════ -->
   <div x-show="toast.on" x-cloak
-       :class="toast.on ? 'toast-enter' : 'toast-leave'"
-       class="fixed bottom-5 right-5 z-50 glass rounded-xl px-4 py-3 flex items-center gap-2.5 shadow-2xl">
+       class="fixed bottom-5 right-5 z-50 glass rounded-xl px-4 py-3 flex items-center gap-2.5 shadow-2xl"
+       :class="toast.on ? 'fade-up' : 'fade-down'">
     <div class="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
-         :class="toast.type==='ok' ? 'bg-green-500/20' : 'bg-red-500/20'">
-      <svg x-show="toast.type==='ok'" class="w-2.5 h-2.5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+         :class="toast.ok ? 'bg-green-500/20' : 'bg-red-500/20'">
+      <svg x-show="toast.ok" class="w-2.5 h-2.5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
       </svg>
-      <svg x-show="toast.type==='err'" class="w-2.5 h-2.5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+      <svg x-show="!toast.ok" class="w-2.5 h-2.5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
       </svg>
     </div>
     <span class="text-sm text-slate-200" x-text="toast.msg"></span>
@@ -909,135 +1084,149 @@
 
 </div><!-- /app -->
 
-<!-- ═══ SCRIPTS ══════════════════════════════════════════════════ -->
 
+<!-- ═══════════════ JAVASCRIPT ═══════════════════════════════════ -->
 <script>
-/* ── 3D Tilt (MetricCard) ─────────────────────────────────────── */
-function tilt(e, wrap) {
-  const card = wrap.querySelector('.metric-card')
-  const rect = card.getBoundingClientRect()
-  const x = e.clientX - rect.left
-  const y = e.clientY - rect.top
-  const cx = rect.width / 2, cy = rect.height / 2
-  const rx = (y - cy) / 28, ry = -(x - cx) / 28
-  card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`
-}
-function resetTilt(wrap) {
-  const card = wrap.querySelector('.metric-card')
-  card.style.transform = 'rotateX(0) rotateY(0) translateZ(0)'
-}
-
-/* ── Alpine app ──────────────────────────────────────────────── */
 function app() {
   return {
+    // ── State ──────────────────────────────────────────────────────
     tab: 'dashboard',
     lastUpdate: '--',
     autoRefresh: true,
     refreshSec: 30,
     _timer: null,
-    chart: null,
+    _chart: null,
     sparkData: [],
 
-    sysStatus: { healthy: true, mcpUptime: 0 },
-    metrics: { depth: null, processed: null, failed: null, uptimeSec: null },
+    // health (from /status + /healthz)
+    health: { ok: true, mcpUptime: 0 },
+
+    // metrics (from /stats)
+    m: { depth: null, processed: null, total: null, uptime: null, ttl: null },
 
     loading: { dash: false, explorer: false },
+
+    // Explorer
     explorerQ: '',
     explorerMsg: null,
-    explorerSearch: null,
+    explorerSearched: false,
 
+    // Settings
     cfg: { webhookSecret: '', mcpToken: '', mcpConnectorUrl: '', webhookApiUrl: '' },
     reveal: { webhook: false, mcp: false },
-    secretsLoaded: false,
-    configLoaded: false,
+    _secretsLoaded: false,
+    _configLoaded: false,
 
-    toast: { on: false, msg: '', type: 'ok' },
+    // Toast
+    toast: { on: false, msg: '', ok: true },
     _toastTimer: null,
 
-    // ── Computed: token from URL /t/<token>/ui ──────────────
+    // ── URL helpers ────────────────────────────────────────────────
     get token() { return window.location.pathname.split('/')[2] || '' },
     get api()   { return `/t/${this.token}/api` },
 
-    // ── Init ──────────────────────────────────────────────
+    // ── init ────────────────────────────────────────────────────────
     async init() {
-      await Promise.all([this.refreshDashboard(), this.loadConfig()])
+      await Promise.all([this.refreshDash(), this.loadConfig()])
       this.$nextTick(() => this.initChart())
       if (this.autoRefresh) this.startTimer()
     },
 
-    // ── Dashboard refresh ──────────────────────────────────
-    async refreshDashboard() {
+    // ── Dashboard refresh ───────────────────────────────────────────
+    async refreshDash() {
       this.loading.dash = true
       try {
-        const [st, stats, hz] = await Promise.all([
-          fetch(`${this.api}/status`).then(r => r.json()).catch(() => null),
-          fetch(`${this.api}/stats`).then(r => r.json()).catch(() => null),
-          fetch('/healthz').then(r => r.json()).catch(() => null),
+        const [statusR, statsR, hzR] = await Promise.all([
+          fetch(`${this.api}/status`).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(`${this.api}/stats`).then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch('/healthz').then(r => r.ok ? r.json() : null).catch(() => null),
         ])
 
-        if (st) {
-          this.sysStatus.healthy = st.healthy !== false && st.ok !== false
-          this.metrics.depth = st.depth ?? st.queue_depth ?? st.size ?? st.pending ?? st.count ?? 0
+        // ── Status ──
+        // Response: {"ok":true,"uptime_s":3256}
+        if (statusR !== null) {
+          this.health.ok = statusR.ok === true || statusR.healthy === true
         }
-        if (stats) {
-          this.metrics.processed = stats.processed ?? stats.total_processed ?? stats.delivered ?? stats.total ?? 0
-          this.metrics.failed = stats.failed ?? stats.errors ?? stats.dead ?? 0
-          this.metrics.uptimeSec = stats.uptime_s ?? stats.uptime ?? null
-        }
-        if (hz) this.sysStatus.mcpUptime = hz.uptime_s ?? 0
 
-        const d = this.metrics.depth ?? 0
-        this.sparkData.push(d)
+        // ── Stats ──
+        // Response: {"ok":true,"uptime_s":3255,"ttl_hours":48,"cleanup_interval_min":60,
+        //            "stats":{"total":1,"pending":0,"read_count":1}}
+        if (statsR) {
+          const s = statsR.stats || {}
+          this.m.depth     = s.pending      ?? 0
+          this.m.processed = s.read_count   ?? 0
+          this.m.total     = s.total        ?? 0
+          this.m.uptime    = statsR.uptime_s ?? null
+          this.m.ttl       = statsR.ttl_hours ?? null
+        }
+
+        // ── MCP healthz ──
+        if (hzR) this.health.mcpUptime = hzR.uptime_s ?? 0
+
+        // Sparkline
+        this.sparkData.push(this.m.depth ?? 0)
         if (this.sparkData.length > 20) this.sparkData.shift()
         this.updateChart()
         this.lastUpdate = new Date().toLocaleTimeString('fr')
-      } catch { this.sysStatus.healthy = false }
-      finally  { this.loading.dash = false }
+
+      } catch (e) {
+        // Only flag degraded on a real exception (network failure etc.)
+        this.health.ok = false
+        console.error('[dash]', e)
+      } finally {
+        this.loading.dash = false
+      }
     },
 
-    // ── Config (non-secret) ────────────────────────────────
+    // ── Config ───────────────────────────────────────────────────────
     async loadConfig() {
-      if (this.configLoaded) return
+      if (this._configLoaded) return
       try {
         const r = await fetch(`${this.api}/config`)
         const d = await r.json()
         this.cfg.mcpConnectorUrl = d.mcpConnectorUrl || ''
         this.cfg.webhookApiUrl   = d.webhookApiUrl   || ''
-        this.configLoaded = true
+        this._configLoaded = true
       } catch {}
     },
+    ensureConfig() { this.loadConfig() },
 
-    // ── Secrets (on-demand) ────────────────────────────────
+    // ── Secrets ──────────────────────────────────────────────────────
     async loadSecrets() {
-      if (this.secretsLoaded) return
+      if (this._secretsLoaded) return
       try {
         const r = await fetch(`${this.api}/secrets`)
         const d = await r.json()
         this.cfg.webhookSecret = d.webhookSecret || ''
         this.cfg.mcpToken      = d.mcpToken      || ''
-        this.secretsLoaded = true
+        this._secretsLoaded = true
       } catch {}
     },
-
-    toggleReveal(key) {
-      this.reveal[key] = !this.reveal[key]
-      if (this.reveal[key]) this.loadSecrets()
+    toggleReveal(k) {
+      this.reveal[k] = !this.reveal[k]
+      if (this.reveal[k]) this.loadSecrets()
     },
 
-    // ── Explorer ───────────────────────────────────────────
+    // ── Explorer ──────────────────────────────────────────────────────
+    maybePeek() {
+      if (!this.explorerMsg && !this.loading.explorer) this.loadPeek()
+    },
     async loadPeek() {
       this.loading.explorer = true
-      this.explorerSearch = null
+      this.explorerSearched = false
       try {
         const r = await fetch(`${this.api}/peek`)
         if (r.ok) {
           const d = await r.json()
-          this.explorerMsg = this._normalizeMsg(d)
-        } else { this.explorerMsg = null }
+          // Response: {"ok":true,"stats":{...},"items":[{id,source,correlation_id,status,created_at,payload}]}
+          const item = Array.isArray(d.items) ? d.items[0] : (d.id ? d : null)
+          this.explorerMsg = item ? this._normalize(item) : null
+        } else {
+          this.explorerMsg = null
+        }
       } catch { this.explorerMsg = null }
       finally  { this.loading.explorer = false }
     },
-
     async searchById() {
       if (!this.explorerQ) return
       this.loading.explorer = true
@@ -1045,28 +1234,28 @@ function app() {
         const r = await fetch(`${this.api}/by-id/${encodeURIComponent(this.explorerQ)}?peek=true`)
         if (r.ok) {
           const d = await r.json()
-          this.explorerMsg = this._normalizeMsg(d)
-          this.explorerSearch = this.explorerQ
+          const item = Array.isArray(d.items) ? d.items[0] : (d.id ? d : null)
+          this.explorerMsg = item ? this._normalize(item) : null
+          this.explorerSearched = true
+          if (!this.explorerMsg) this.showToast('Message non trouvé', false)
         } else {
           this.explorerMsg = null
-          this.explorerSearch = null
-          this.showToast('Message non trouvé', 'err')
+          this.showToast('Message non trouvé', false)
         }
-      } catch { this.showToast('Erreur de recherche', 'err') }
+      } catch { this.showToast('Erreur de recherche', false) }
       finally  { this.loading.explorer = false }
     },
-
-    _normalizeMsg(d) {
-      if (!d) return null
+    _normalize(item) {
       return {
-        correlationId: d.correlationId ?? d.correlation_id ?? d.id ?? null,
-        payload:       d.payload ?? d.body ?? d.data ?? d,
-        receivedAt:    d.receivedAt ?? d.received_at
-          ? new Date(d.receivedAt ?? d.received_at).toLocaleString('fr') : null,
+        correlationId: item.correlation_id ?? item.correlationId ?? null,
+        payload:       item.payload ?? item.body ?? item.data ?? item,
+        createdAt:     item.created_at ? new Date(item.created_at).toLocaleString('fr') : null,
+        status:        item.status ?? null,
+        source:        item.source ?? null,
       }
     },
 
-    // ── Auto-refresh ───────────────────────────────────────
+    // ── Auto-refresh ──────────────────────────────────────────────────
     toggleAutoRefresh() {
       this.autoRefresh = !this.autoRefresh
       this.autoRefresh ? this.startTimer() : this.stopTimer()
@@ -1074,48 +1263,54 @@ function app() {
     startTimer() {
       this.stopTimer()
       this._timer = setInterval(() => {
-        if (this.tab === 'dashboard') this.refreshDashboard()
+        if (this.tab === 'dashboard') this.refreshDash()
       }, this.refreshSec * 1000)
     },
-    stopTimer() { if (this._timer) { clearInterval(this._timer); this._timer = null } },
+    stopTimer()  { if (this._timer) { clearInterval(this._timer); this._timer = null } },
     restartTimer() { if (this.autoRefresh) this.startTimer() },
 
-    // ── API commands ───────────────────────────────────────
+    // ── API commands ──────────────────────────────────────────────────
     apiCmds() {
-      const secret = this.cfg.webhookSecret || '<YOUR_WEBHOOK_SECRET>'
-      const base   = this.cfg.webhookApiUrl
+      const s = this.cfg.webhookSecret || '<WEBHOOK_SECRET>'
+      const b = this.cfg.webhookApiUrl
         ? this.cfg.webhookApiUrl.replace('/webhook', '')
         : 'https://queue.your-domain.com'
-      const h = `-H "x-webhook-secret: ${secret}"`
+      const h = `-H "x-webhook-secret: ${s}"`
       return [
-        { id:'status', method:'GET',  name:'Statut de la queue',        desc:'État de santé + profondeur courante',
-          curl: `curl ${h} \\\n  ${base}/status` },
-        { id:'stats',  method:'GET',  name:'Statistiques',              desc:'Messages traités, erreurs, uptime…',
-          curl: `curl ${h} \\\n  ${base}/stats` },
-        { id:'peek',   method:'GET',  name:'Peek — aperçu non-destructif', desc:'Voir le prochain message sans le consommer',
-          curl: `curl ${h} \\\n  ${base}/peek` },
-        { id:'next',   method:'GET',  name:'Next — consommer le prochain', desc:'Récupère ET retire le message de la queue',
-          curl: `curl ${h} \\\n  ${base}/next` },
-        { id:'byid',   method:'GET',  name:'Recherche par Correlation ID', desc:'Peek d\'un message spécifique par son ID',
-          curl: `curl ${h} \\\n  "${base}/by-id/MON_ID?peek=true"` },
-        { id:'send',   method:'POST', name:'Envoyer un message',          desc:'Ajoute un payload JSON dans la queue',
-          curl: `curl -X POST \\\n  ${h} \\\n  -H "Content-Type: application/json" \\\n  -H "x-correlation-id: mon-id-unique" \\\n  -d '{"event":"ma_commande","data":{"key":"value"}}' \\\n  ${base}/webhook` },
+        { id:'status', method:'GET',  name:'Statut de la queue',
+          desc:'État de santé + profondeur courante', endpoint:'/status',
+          curl:`curl ${h} \\\n  ${b}/status` },
+        { id:'stats',  method:'GET',  name:'Statistiques complètes',
+          desc:'Messages traités, pending, total, TTL, uptime…', endpoint:'/stats',
+          curl:`curl ${h} \\\n  ${b}/stats` },
+        { id:'peek',   method:'GET',  name:'Peek — aperçu non-destructif',
+          desc:'Voir le(s) prochain(s) message(s) sans les consommer', endpoint:'/peek',
+          curl:`curl ${h} \\\n  ${b}/peek` },
+        { id:'next',   method:'GET',  name:'Next — consommer le prochain',
+          desc:'Récupère ET retire le message de la queue', endpoint:'/next',
+          curl:`curl ${h} \\\n  ${b}/next` },
+        { id:'byid',   method:'GET',  name:'Recherche par Correlation ID',
+          desc:'Accéder à un message spécifique (peek par défaut)', endpoint:'/by-id/:id',
+          curl:`curl ${h} \\\n  "${b}/by-id/MON_ID?peek=true"` },
+        { id:'send',   method:'POST', name:'Envoyer un message',
+          desc:'Ajoute un payload JSON dans la queue avec ID de corrélation optionnel', endpoint:'/webhook',
+          curl:`curl -X POST \\\n  ${h} \\\n  -H "Content-Type: application/json" \\\n  -H "x-correlation-id: mon-id-unique" \\\n  -d '{"event":"my_event","data":{"key":"value"}}' \\\n  ${b}/webhook` },
       ]
     },
 
-    // ── Helpers ────────────────────────────────────────────
+    // ── Formatters ────────────────────────────────────────────────────
     fmtNum(n) {
       if (n == null) return '--'
       return Number(n).toLocaleString('fr')
     },
     fmtUptime(s) {
-      if (!s && s !== 0) return '--'
+      if (s == null) return '--'
       const d = Math.floor(s / 86400)
       const h = Math.floor((s % 86400) / 3600)
       const m = Math.floor((s % 3600) / 60)
       if (d > 0) return `${d}j ${h}h`
       if (h > 0) return `${h}h ${m}m`
-      return `${m}m`
+      return `${m}m ${s%60}s`
     },
     syntaxHL(json) {
       if (!json) return ''
@@ -1124,39 +1319,59 @@ function app() {
         .replace(
           /("(\\u[\dA-Fa-f]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
           m => {
-            let cls = 'json-number'
-            if (/^"/.test(m))         cls = /:$/.test(m) ? 'json-key' : 'json-string'
-            else if (/true|false/.test(m)) cls = 'json-bool'
-            else if (/null/.test(m))  cls = 'json-null'
+            let cls = 'jn'
+            if (/^"/.test(m))           cls = /:$/.test(m) ? 'jk' : 'js'
+            else if (/true|false/.test(m)) cls = 'jb'
+            else if (/null/.test(m))    cls = 'jl'
             return `<span class="${cls}">${m}</span>`
           }
         )
     },
+
+    // Inline SVG sparkline points from array of values
+    sparkPoints(data, w, h) {
+      if (!data || data.length < 2) return ''
+      const max = Math.max(...data, 1)
+      return data.map((v, i) => {
+        const x = (i / (data.length - 1)) * w
+        const y = h - (v / max) * (h - 2) - 1
+        return `${x.toFixed(1)},${y.toFixed(1)}`
+      }).join(' ')
+    },
+
+    // ── Clipboard ─────────────────────────────────────────────────────
     async copy(text) {
       if (!text) return
       try {
         await navigator.clipboard.writeText(text)
-        this.showToast('Copié dans le presse-papier !', 'ok')
-      } catch { this.showToast('Erreur de copie', 'err') }
+        this.showToast('Copié dans le presse-papier', true)
+      } catch {
+        this.showToast('Erreur de copie', false)
+      }
     },
-    showToast(msg, type = 'ok') {
-      this.toast = { on: true, msg, type }
+    showToast(msg, ok = true) {
+      this.toast = { on: true, msg, ok }
       if (this._toastTimer) clearTimeout(this._toastTimer)
-      this._toastTimer = setTimeout(() => { this.toast.on = false }, 2500)
+      this._toastTimer = setTimeout(() => { this.toast.on = false }, 2400)
     },
 
-    // ── Chart ──────────────────────────────────────────────
+    // ── Chart.js sparkline ────────────────────────────────────────────
     initChart() {
-      const ctx = document.getElementById('sparkChart')
-      if (!ctx || !window.Chart) return
-      this.chart = new Chart(ctx, {
+      const canvas = document.getElementById('sparkChart')
+      if (!canvas || !window.Chart) return
+      this._chart = new Chart(canvas, {
         type: 'line',
         data: {
           labels: Array(20).fill(''),
           datasets: [{
-            data: Array(20).fill(null),
-            borderColor: 'rgba(34,197,94,0.75)',
-            backgroundColor: 'rgba(34,197,94,0.07)',
+            data: [...this.sparkData],
+            borderColor: 'rgba(34,197,94,0.7)',
+            backgroundColor: (ctx) => {
+              const g = ctx.chart.ctx.createLinearGradient(0,0,0,120)
+              g.addColorStop(0, 'rgba(34,197,94,0.12)')
+              g.addColorStop(1, 'rgba(34,197,94,0.01)')
+              return g
+            },
             borderWidth: 2,
             pointRadius: 0,
             pointHoverRadius: 4,
@@ -1171,32 +1386,32 @@ function app() {
           plugins: {
             legend: { display: false },
             tooltip: {
-              callbacks: { title: () => '', label: c => `${c.parsed.y} messages` },
-              backgroundColor: 'rgba(15,23,42,0.95)',
-              borderColor: 'rgba(255,255,255,0.07)',
+              callbacks: { title: () => '', label: c => `${c.parsed.y} en attente` },
+              backgroundColor: 'rgba(2,6,23,0.95)',
+              borderColor: 'rgba(255,255,255,0.06)',
               borderWidth: 1,
               padding: 8,
-              bodyColor: '#94A3B8',
+              bodyColor: '#64748B',
             }
           },
           scales: {
             x: { display: false },
             y: {
               display: true, min: 0,
-              grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
-              ticks: { color: '#475569', font: { size: 10 }, maxTicksLimit: 4, stepSize: 1 },
+              grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false },
+              ticks: { color: '#1E293B', font: { size: 10, family: 'Space Grotesk' }, maxTicksLimit: 4, stepSize: 1 },
               border: { display: false },
             }
           },
-          animation: { duration: 250 },
+          animation: { duration: 300 },
           interaction: { mode: 'index', intersect: false },
         }
       })
     },
     updateChart() {
-      if (!this.chart) return
-      this.chart.data.datasets[0].data = [...this.sparkData]
-      this.chart.update('none')
+      if (!this._chart) return
+      this._chart.data.datasets[0].data = [...this.sparkData]
+      this._chart.update('none')
     },
   }
 }
