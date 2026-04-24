@@ -60,11 +60,9 @@
       border: 1px solid rgba(255,255,255,0.05);
     }
 
-    /* ═══ STAT CARD (magic: reui/statistics-card-7) ══════════════════
-       Orbiting white halo + rotating ray + gradient border
-    ════════════════════════════════════════════════════════════════════ */
+    /* ═══ STAT CARD (magic: reui/statistics-card-7) ══════════════════ */
     .sc-wrap {
-      padding: 1px; /* gradient border thickness */
+      padding: 1px;
       border-radius: 16px;
       background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%);
       transition: background 0.4s ease;
@@ -123,8 +121,7 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       line-height: 1;
-      color: white;
-      background: linear-gradient(135deg, #FFFFFF, #94A3B8);
+      background: linear-gradient(135deg, #FFFFFF, #CBD5E1);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -141,11 +138,11 @@
       font-weight: 500;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.4);
+      color: rgba(255,255,255,0.55);
       margin-top: 0.5rem;
       transition: color 0.3s ease;
     }
-    .sc-wrap:hover .sc-label { color: rgba(255,255,255,0.65); }
+    .sc-wrap:hover .sc-label { color: rgba(255,255,255,0.85); }
 
     /* Icon wrapper */
     .sc-icon {
@@ -178,7 +175,7 @@
       display: flex; align-items: center; gap: 6px;
       padding: 12px 14px;
       font-size: 0.875rem; font-weight: 500;
-      color: #475569;
+      color: #94A3B8;
       border-bottom: 2px solid transparent;
       transition: all 0.15s ease;
       cursor: pointer;
@@ -186,7 +183,7 @@
       background: transparent;
       border-top: none; border-left: none; border-right: none;
     }
-    .tab-btn:hover { color: #94A3B8; background: rgba(255,255,255,0.03); }
+    .tab-btn:hover { color: #E2E8F0; background: rgba(255,255,255,0.03); }
     .tab-btn.active { color: #22C55E; border-bottom-color: rgba(34,197,94,0.55); background: rgba(34,197,94,0.05); }
 
     /* ═══ HEADER STATUS PULSE ════════════════════════════════════════ */
@@ -226,20 +223,18 @@
       border: 1px solid rgba(255,255,255,0.06);
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
-      color: #64748B;
+      color: #CBD5E1;
       transition: all 0.2s;
     }
-    .monitor-row:hover .monitor-icon-wrap { background: rgba(255,255,255,0.08); color: #94A3B8; }
-    .monitor-label { font-size: 0.75rem; font-weight: 500; color: #64748B; }
-    .monitor-value { font-size: 0.75rem; font-family: 'Space Grotesk', monospace; color: #CBD5E1; }
+    .monitor-row:hover .monitor-icon-wrap { background: rgba(255,255,255,0.08); color: #F1F5F9; }
+    .monitor-label { font-size: 0.75rem; font-weight: 500; color: #E2E8F0; }
+    .monitor-value { font-size: 0.75rem; font-family: 'Space Grotesk', monospace; color: #F1F5F9; }
 
     /* Inline sparkline SVG */
     .spark { overflow: visible; }
     .spark-line { fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
-    /* ═══ ACCORDION (ruixenui/ruixen-accordian01 — outline variant) ══
-       Smooth expand with border radius preservation
-    ════════════════════════════════════════════════════════════════════ */
+    /* ═══ ACCORDION (ruixenui/ruixen-accordian01 — outline variant) ══ */
     .ac-item {
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 14px;
@@ -264,11 +259,11 @@
 
     .ac-chevron {
       width: 16px; height: 16px;
-      color: #475569;
+      color: #CBD5E1;
       flex-shrink: 0;
       transition: transform 0.25s ease, color 0.2s;
     }
-    .ac-item.ac-open .ac-chevron { transform: rotate(180deg); color: #94A3B8; }
+    .ac-item.ac-open .ac-chevron { transform: rotate(180deg); color: #F1F5F9; }
 
     .ac-content {
       background: rgba(10, 15, 30, 0.6);
@@ -289,6 +284,8 @@
     .badge-get    { background: rgba(34,197,94,0.12);  color: #4ADE80; border: 1px solid rgba(34,197,94,0.25); }
     .badge-post   { background: rgba(59,130,246,0.12); color: #60A5FA; border: 1px solid rgba(59,130,246,0.25); }
     .badge-delete { background: rgba(239,68,68,0.12);  color: #F87171; border: 1px solid rgba(239,68,68,0.25); }
+    .badge-pending { background: rgba(251,191,36,0.12); color: #FCD34D; border: 1px solid rgba(251,191,36,0.25); font-size:0.68rem; padding:2px 8px; border-radius:999px; font-family:'Space Grotesk',sans-serif; letter-spacing:0.04em; }
+    .badge-read    { background: rgba(100,116,139,0.12); color: #CBD5E1; border: 1px solid rgba(100,116,139,0.2); font-size:0.68rem; padding:2px 8px; border-radius:999px; font-family:'Space Grotesk',sans-serif; letter-spacing:0.04em; }
 
     /* ═══ COPY FIELD ═════════════════════════════════════════════════ */
     .copy-field {
@@ -299,7 +296,7 @@
       padding: 8px 12px;
       font-size: 0.75rem;
       font-family: 'DM Mono', 'Fira Code', 'SF Mono', monospace;
-      color: #64748B;
+      color: #E2E8F0;
       overflow: hidden;
     }
     .copy-field span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -317,11 +314,11 @@
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .btn-ghost {
-      color: #64748B;
-      border-color: rgba(255,255,255,0.07);
-      background: rgba(255,255,255,0.03);
+      color: #E2E8F0;
+      border-color: rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
     }
-    .btn-ghost:hover:not(:disabled) { color: #CBD5E1; background: rgba(255,255,255,0.07); }
+    .btn-ghost:hover:not(:disabled) { color: #FFFFFF; background: rgba(255,255,255,0.09); }
 
     .btn-primary {
       color: #4ADE80;
@@ -334,11 +331,11 @@
       width: 34px; height: 34px; padding: 0;
       border-radius: 9px;
       display: flex; align-items: center; justify-content: center;
-      color: #475569;
-      border-color: rgba(255,255,255,0.07);
-      background: rgba(255,255,255,0.03);
+      color: #CBD5E1;
+      border-color: rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.04);
     }
-    .btn-icon:hover:not(:disabled) { color: #94A3B8; background: rgba(255,255,255,0.07); }
+    .btn-icon:hover:not(:disabled) { color: #FFFFFF; background: rgba(255,255,255,0.09); }
 
     /* ═══ INPUT ══════════════════════════════════════════════════════ */
     .q-input {
@@ -347,12 +344,27 @@
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 10px;
       padding: 8px 12px 8px 36px;
-      font-size: 0.875rem; color: #CBD5E1;
+      font-size: 0.875rem; color: #F1F5F9;
       outline: none;
       transition: border-color 0.2s, background 0.2s;
     }
     .q-input:focus { border-color: rgba(34,197,94,0.3); background: rgba(0,0,0,0.3); }
-    .q-input::placeholder { color: #334155; }
+    .q-input::placeholder { color: #64748B; }
+
+    /* ═══ FILTER PILLS ═══════════════════════════════════════════════ */
+    .filter-pill {
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid rgba(255,255,255,0.07);
+      color: #CBD5E1;
+      background: transparent;
+    }
+    .filter-pill:hover { color: #F1F5F9; border-color: rgba(255,255,255,0.15); }
+    .filter-pill.active { color: #22C55E; background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); }
 
     /* ═══ TOGGLE ═════════════════════════════════════════════════════ */
     .toggle { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
@@ -377,11 +389,11 @@
     .toggle-track.on .toggle-thumb { transform: translateX(18px); }
 
     /* ═══ JSON SYNTAX ════════════════════════════════════════════════ */
-    .jk { color: #7DD3FC; }   /* key */
-    .js { color: #86EFAC; }   /* string value */
-    .jn { color: #FCA5A5; }   /* number */
-    .jb { color: #C4B5FD; }   /* boolean */
-    .jl { color: #94A3B8; }   /* null */
+    .jk { color: #7DD3FC; }
+    .js { color: #86EFAC; }
+    .jn { color: #FCA5A5; }
+    .jb { color: #C4B5FD; }
+    .jl { color: #94A3B8; }
 
     /* ═══ ANIMATIONS ═════════════════════════════════════════════════ */
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -404,20 +416,20 @@
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #334155;
+      color: #CBD5E1;
       display: flex; align-items: center; gap: 8px;
     }
     .section-title::after {
       content: '';
       flex: 1; height: 1px;
-      background: linear-gradient(to right, rgba(255,255,255,0.05), transparent);
+      background: linear-gradient(to right, rgba(255,255,255,0.07), transparent);
     }
 
     /* Explorer empty state */
     .empty-state {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 3.5rem 1rem;
-      color: #334155;
+      color: #CBD5E1;
     }
 
     /* Settings reveal field */
@@ -426,10 +438,16 @@
       font-family: 'DM Mono', monospace;
       font-size: 0.75rem;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      color: #475569;
+      color: #94A3B8;
       letter-spacing: 0.04em;
     }
-    .secret-value.revealed { color: #94A3B8; letter-spacing: 0; }
+    .secret-value.revealed { color: #F1F5F9; letter-spacing: 0; }
+
+    /* Queue item row in explorer */
+    .q-row {
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .q-row:last-child { border-bottom: none; }
 
     [x-cloak] { display: none !important; }
   </style>
@@ -451,7 +469,7 @@
         </div>
         <div>
           <p class="font-heading font-semibold text-sm text-white leading-tight">Cowork Queue</p>
-          <p style="font-size:0.7rem; color:#475569; line-height:1.2" class="mt-0.5">Admin Dashboard</p>
+          <p style="font-size:0.7rem; color:#94A3B8; line-height:1.2" class="mt-0.5">Admin Dashboard</p>
         </div>
       </div>
 
@@ -463,7 +481,7 @@
                 :class="health.ok ? 'text-green-400' : 'text-red-400'"
                 x-text="health.ok ? 'Healthy' : 'Dégradé'"></span>
         </div>
-        <span style="font-size:0.7rem; color:#1E293B" x-text="lastUpdate"></span>
+        <span style="font-size:0.7rem; color:#64748B" x-text="lastUpdate"></span>
       </div>
     </div>
   </header>
@@ -519,15 +537,15 @@
         <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
           <div>
             <h2 class="font-heading text-xl font-semibold text-white">Dashboard</h2>
-            <p class="text-sm mt-0.5" style="color:#475569">Vue temps réel de la queue Cowork</p>
+            <p class="text-sm mt-0.5" style="color:#94A3B8">Vue temps réel de la queue Cowork</p>
           </div>
           <div class="flex items-center gap-2.5">
             <label class="toggle" @click="toggleAutoRefresh()">
               <div class="toggle-track" :class="autoRefresh&&'on'"><div class="toggle-thumb"></div></div>
-              <span class="text-xs" style="color:#475569">Auto-refresh</span>
+              <span class="text-xs text-white">Auto-refresh</span>
             </label>
             <select x-model.number="refreshSec" @change="restartTimer()"
-                    class="glass-sm text-xs px-2.5 py-1.5 rounded-lg cursor-pointer outline-none" style="color:#94A3B8">
+                    class="glass-sm text-xs px-2.5 py-1.5 rounded-lg cursor-pointer outline-none text-white">
               <option value="10">10s</option>
               <option value="30">30s</option>
               <option value="60">1m</option>
@@ -541,7 +559,7 @@
           </div>
         </div>
 
-        <!-- ── 4 Stat Cards (magic: statistics-card-7 + moving halo) ── -->
+        <!-- ── 4 Stat Cards ── -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
 
           <!-- Queue depth -->
@@ -612,7 +630,7 @@
               <div class="sc-ray" style="animation-delay:-2s"></div>
               <div class="relative z-10">
                 <div class="flex items-start justify-between mb-5">
-                  <div class="sc-icon sc-icon-purple" style="background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.25);color:#C084FC">
+                  <div class="sc-icon" style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.25);color:#C084FC">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -629,17 +647,19 @@
         <!-- ── Sparkline + System Monitor ── -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-          <!-- Sparkline (Chart.js) -->
+          <!-- Chart.js sparkline -->
           <div class="glass rounded-2xl p-5 lg:col-span-2">
             <div class="flex items-center justify-between mb-3">
-              <p class="section-title w-full">Profondeur de queue <span class="font-sans normal-case font-normal" style="letter-spacing:0;text-transform:none;color:#1E293B">— 20 dernières mesures</span></p>
+              <p class="section-title w-full">Profondeur de queue
+                <span class="font-sans normal-case font-normal" style="letter-spacing:0;text-transform:none;color:#94A3B8">— 20 dernières mesures</span>
+              </p>
             </div>
             <div style="height:120px">
               <canvas id="sparkChart"></canvas>
             </div>
           </div>
 
-          <!-- System Monitor panel (isaiahbjork/system-monitor — adapted) -->
+          <!-- System Monitor panel -->
           <div class="glass rounded-2xl p-4">
             <p class="section-title mb-3">État du système</p>
 
@@ -660,7 +680,6 @@
                             x-text="health.ok ? 'Online' : 'Error'"></span>
                     </div>
                   </div>
-                  <!-- Mini sparkline SVG -->
                   <svg class="spark w-full" height="16" preserveAspectRatio="none">
                     <polyline class="spark-line" :style="`stroke:${health.ok ? '#22C55E' : '#EF4444'}; opacity:0.5`"
                               :points="sparkPoints(sparkData, 100, 16)"/>
@@ -683,8 +702,8 @@
                       <span class="monitor-value text-green-400">Online</span>
                     </div>
                   </div>
-                  <div class="mt-1.5 text-xs" style="color:#1E293B">
-                    Uptime : <span style="color:#334155" x-text="fmtUptime(health.mcpUptime)"></span>
+                  <div class="mt-1.5 text-xs" style="color:#94A3B8">
+                    Uptime : <span class="text-white" x-text="fmtUptime(health.mcpUptime)"></span>
                   </div>
                 </div>
               </div>
@@ -729,14 +748,14 @@
 
 
       <!-- ══════════════════════════════════════════════════════════
-           TAB 2 — QUEUE EXPLORER
+           TAB 2 — QUEUE EXPLORER (accordion — tous les items)
       ══════════════════════════════════════════════════════════════ -->
       <div x-show="tab==='explorer'" style="display:none">
 
         <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
           <div>
             <h2 class="font-heading text-xl font-semibold text-white">Queue Explorer</h2>
-            <p class="text-sm mt-0.5" style="color:#475569">Lecture seule — aucun message n'est consommé (peek)</p>
+            <p class="text-sm mt-0.5" style="color:#94A3B8">Lecture seule — aucun message n'est consommé (peek)</p>
           </div>
           <button class="btn btn-ghost" @click="loadPeek()" :disabled="loading.explorer">
             <svg class="w-3.5 h-3.5" :class="loading.explorer&&'spin'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -750,7 +769,7 @@
         <div class="glass rounded-2xl p-4 mb-4">
           <div class="flex gap-2.5">
             <div class="relative flex-1">
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color:#334155"
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color:#64748B"
                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
@@ -761,23 +780,37 @@
             <button class="btn btn-primary" @click="searchById()" :disabled="!explorerQ||loading.explorer">
               Rechercher
             </button>
-            <button class="btn btn-ghost" x-show="explorerQ" @click="explorerQ=''; explorerSearched=false; loadPeek()">
+            <button class="btn btn-ghost" x-show="explorerSearched" @click="explorerQ=''; explorerSearched=false; loadPeek()">
               ×
             </button>
           </div>
         </div>
 
-        <!-- Message panel -->
-        <div class="glass rounded-2xl overflow-hidden">
-          <div class="px-5 py-3.5 flex items-center justify-between"
-               style="border-bottom:1px solid rgba(255,255,255,0.04)">
-            <p class="section-title" style="font-size:0.65rem">
-              <span x-text="explorerSearched ? 'Recherche par ID' : 'Tête de queue (peek)'"></span>
-            </p>
-            <span style="font-size:0.7rem; color:#1E293B; background:rgba(255,255,255,0.03); padding:2px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.05)">
-              non-destructif
-            </span>
+        <!-- Status filters + count -->
+        <div class="flex items-center justify-between mb-3 px-1">
+          <div class="flex items-center gap-2">
+            <button class="filter-pill" :class="explorerStatusFilter==='all'&&'active'"
+                    @click="explorerStatusFilter='all'">
+              Tous
+              <span class="ml-1 text-xs opacity-60" x-text="`(${explorerItems.length})`"></span>
+            </button>
+            <button class="filter-pill" :class="explorerStatusFilter==='pending'&&'active'"
+                    @click="explorerStatusFilter='pending'">
+              Pending
+              <span class="ml-1 text-xs opacity-60" x-text="`(${explorerItems.filter(i=>i.status==='pending').length})`"></span>
+            </button>
+            <button class="filter-pill" :class="explorerStatusFilter==='read'&&'active'"
+                    @click="explorerStatusFilter='read'">
+              Lu
+              <span class="ml-1 text-xs opacity-60" x-text="`(${explorerItems.filter(i=>i.status==='read').length})`"></span>
+            </button>
           </div>
+          <span style="font-size:0.7rem; color:#94A3B8"
+                x-text="explorerSearched ? 'Recherche par ID' : '50 derniers messages (peek)'"></span>
+        </div>
+
+        <!-- Accordion list -->
+        <div class="glass rounded-2xl overflow-hidden">
 
           <!-- Loading -->
           <div x-show="loading.explorer" class="flex items-center justify-center py-16">
@@ -788,7 +821,7 @@
           </div>
 
           <!-- Empty -->
-          <div x-show="!loading.explorer && !explorerMsg" class="empty-state">
+          <div x-show="!loading.explorer && filteredItems().length === 0" class="empty-state">
             <svg class="w-12 h-12 mb-3" style="opacity:0.12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
             </svg>
@@ -796,60 +829,99 @@
             <button class="mt-3 text-xs cursor-pointer" style="color:#22C55E" @click="loadPeek()">Recharger →</button>
           </div>
 
-          <!-- Message content -->
-          <div x-show="!loading.explorer && explorerMsg" class="p-5">
-            <template x-if="explorerMsg">
-              <div>
-                <!-- Meta -->
-                <div class="flex flex-wrap items-start gap-5 mb-5">
-                  <div>
-                    <p class="text-xs mb-1" style="color:#334155">Correlation ID</p>
-                    <div class="flex items-center gap-2">
-                      <code class="text-sm font-mono px-2.5 py-0.5 rounded-lg truncate max-w-xs block"
-                            style="color:#7DD3FC; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.12)"
-                            x-text="explorerMsg.correlationId ?? 'N/A'"></code>
-                      <button class="btn btn-icon" @click="copy(explorerMsg.correlationId)" title="Copier ID">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                        </svg>
-                      </button>
+          <!-- Accordion items -->
+          <div x-show="!loading.explorer && filteredItems().length > 0"
+               class="divide-y" style="divide-color:rgba(255,255,255,0.04)">
+            <template x-for="(item, idx) in filteredItems()" :key="item.id || idx">
+              <div class="q-row">
+
+                <!-- Row trigger -->
+                <button class="w-full flex items-center gap-3 px-5 py-3.5 text-left transition-colors"
+                        style="background:transparent"
+                        :style="explorerOpen === (item.id||idx) ? 'background:rgba(20,30,50,0.6)' : ''"
+                        @click="explorerOpen = explorerOpen===(item.id||idx) ? null : (item.id||idx)"
+                        @mouseenter="$el.style.background='rgba(255,255,255,0.02)'"
+                        @mouseleave="$el.style.background=explorerOpen===(item.id||idx)?'rgba(20,30,50,0.6)':'transparent'">
+
+                  <!-- Status badge -->
+                  <span class="badge flex-shrink-0"
+                        :class="item.status==='pending' ? 'badge-pending' : 'badge-read'"
+                        x-text="item.status ?? '—'"></span>
+
+                  <!-- ID / correlation -->
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <code class="text-xs font-mono truncate max-w-xs"
+                            style="color:#7DD3FC"
+                            x-text="item.correlationId ?? item.id ?? 'N/A'"></code>
+                      <span x-show="item.correlationId"
+                            class="text-xs px-1.5 py-0 rounded"
+                            style="color:#4ADE80;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.15)">ID</span>
+                    </div>
+                    <div class="flex items-center gap-3 mt-0.5">
+                      <span class="text-xs" style="color:#94A3B8" x-text="item.createdAt ?? ''"></span>
+                      <span x-show="item.source"
+                            class="text-xs px-1.5 py-0 rounded"
+                            style="color:#C084FC;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.15)"
+                            x-text="item.source"></span>
                     </div>
                   </div>
-                  <div x-show="explorerMsg.createdAt">
-                    <p class="text-xs mb-1" style="color:#334155">Reçu le</p>
-                    <p class="text-sm" style="color:#64748B" x-text="explorerMsg.createdAt"></p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color:#334155">Statut</p>
-                    <span class="text-xs px-2.5 py-0.5 rounded-full font-medium"
-                          :class="explorerMsg.status==='read' ? 'text-slate-400 bg-slate-800' : 'text-green-400 bg-green-900/30'"
-                          x-text="explorerMsg.status ?? '—'"></span>
-                  </div>
-                  <div x-show="explorerMsg.source">
-                    <p class="text-xs mb-1" style="color:#334155">Source</p>
-                    <span class="text-xs px-2.5 py-0.5 rounded-full text-purple-300"
-                          style="background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.15)"
-                          x-text="explorerMsg.source"></span>
+
+                  <!-- Chevron -->
+                  <svg class="w-4 h-4 flex-shrink-0 transition-transform duration-200"
+                       style="color:#94A3B8"
+                       :style="explorerOpen===(item.id||idx) ? 'transform:rotate(180deg)' : ''"
+                       fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+
+                <!-- Expanded content (x-collapse) -->
+                <div x-show="explorerOpen===(item.id||idx)" x-collapse>
+                  <div class="px-5 pb-4 pt-3" style="background:rgba(10,15,30,0.5); border-top:1px solid rgba(255,255,255,0.04)">
+
+                    <!-- Meta row -->
+                    <div class="flex flex-wrap gap-x-6 gap-y-2 mb-3">
+                      <div x-show="item.correlationId">
+                        <p class="text-xs mb-0.5" style="color:#94A3B8">Correlation ID</p>
+                        <div class="flex items-center gap-1.5">
+                          <code class="text-sm font-mono" style="color:#7DD3FC" x-text="item.correlationId"></code>
+                          <button class="btn-icon w-6 h-6 rounded-md" @click.stop="copy(item.correlationId)">
+                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div>
+                        <p class="text-xs mb-0.5" style="color:#94A3B8">ID interne</p>
+                        <code class="text-xs font-mono" style="color:#64748B" x-text="item.id ?? '—'"></code>
+                      </div>
+                      <div x-show="item.readAt">
+                        <p class="text-xs mb-0.5" style="color:#94A3B8">Lu le</p>
+                        <p class="text-xs text-white" x-text="item.readAt"></p>
+                      </div>
+                    </div>
+
+                    <!-- Payload JSON -->
+                    <div class="flex items-center justify-between mb-2">
+                      <p class="section-title" style="font-size:0.65rem">Payload JSON</p>
+                      <button class="btn btn-ghost text-xs" @click.stop="copy(JSON.stringify(item.payload, null, 2))">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        Copier
+                      </button>
+                    </div>
+                    <pre style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:12px 14px; font-size:0.78rem; line-height:1.6; overflow-x:auto; max-height:260px; font-family:'DM Mono','Fira Code',monospace"
+                         x-html="syntaxHL(JSON.stringify(item.payload, null, 2))"></pre>
                   </div>
                 </div>
 
-                <!-- JSON Payload -->
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <p class="section-title">Payload JSON</p>
-                    <button class="btn btn-ghost text-xs" @click="copy(JSON.stringify(explorerMsg.payload, null, 2))">
-                      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                      </svg>
-                      Copier JSON
-                    </button>
-                  </div>
-                  <pre style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:14px 16px; font-size:0.8rem; line-height:1.6; overflow-x:auto; max-height:400px; font-family:'DM Mono','Fira Code',monospace"
-                       x-html="syntaxHL(JSON.stringify(explorerMsg.payload, null, 2))"></pre>
-                </div>
               </div>
             </template>
           </div>
+
         </div>
       </div><!-- /explorer -->
 
@@ -861,7 +933,7 @@
 
         <div class="mb-5">
           <h2 class="font-heading text-xl font-semibold text-white">Paramètres</h2>
-          <p class="text-sm mt-0.5" style="color:#475569">Secrets, URLs et configuration du système</p>
+          <p class="text-sm mt-0.5" style="color:#94A3B8">Secrets, URLs et configuration du système</p>
         </div>
 
         <!-- Secrets -->
@@ -877,7 +949,7 @@
             <!-- Webhook Secret -->
             <div>
               <div class="flex items-center justify-between mb-1.5">
-                <label class="text-xs" style="color:#475569">Webhook Secret <span style="color:#1E293B">(x-webhook-secret)</span></label>
+                <label class="text-xs text-white">Webhook Secret <span style="color:#64748B">(x-webhook-secret)</span></label>
               </div>
               <div class="flex items-center gap-2">
                 <div class="copy-field flex-1">
@@ -902,7 +974,7 @@
 
             <!-- MCP Token -->
             <div>
-              <label class="text-xs block mb-1.5" style="color:#475569">MCP Token <span style="color:#1E293B">(URL embarqué)</span></label>
+              <label class="text-xs text-white block mb-1.5">MCP Token <span style="color:#64748B">(URL embarqué)</span></label>
               <div class="flex items-center gap-2">
                 <div class="copy-field flex-1">
                   <span class="secret-value" :class="reveal.mcp && 'revealed'"
@@ -918,7 +990,7 @@
                 </button>
                 <button class="btn btn-icon" :disabled="!cfg.mcpToken" @click="copy(cfg.mcpToken)">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                   </svg>
                 </button>
               </div>
@@ -939,7 +1011,7 @@
             <!-- MCP Connector -->
             <div>
               <div class="flex items-center justify-between mb-1.5">
-                <label class="text-xs" style="color:#475569">MCP Connector URL</label>
+                <label class="text-xs text-white">MCP Connector URL</label>
                 <span class="text-xs font-medium" style="color:#4ADE80">Claude Web · Desktop · iOS · Android</span>
               </div>
               <div class="flex items-center gap-2">
@@ -953,13 +1025,13 @@
                   Copier
                 </button>
               </div>
-              <p class="text-xs mt-1.5" style="color:#1E293B">Claude → Paramètres → Connecteurs → Ajouter un connecteur personnalisé</p>
+              <p class="text-xs mt-1.5" style="color:#64748B">Claude → Paramètres → Connecteurs → Ajouter un connecteur personnalisé</p>
             </div>
 
             <!-- Webhook API URL -->
             <div>
               <div class="flex items-center justify-between mb-1.5">
-                <label class="text-xs" style="color:#475569">Webhook API URL</label>
+                <label class="text-xs text-white">Webhook API URL</label>
                 <span class="text-xs font-medium" style="color:#FB923C">n8n · Make · Zapier</span>
               </div>
               <div class="flex items-center gap-2">
@@ -973,18 +1045,86 @@
                   Copier
                 </button>
               </div>
-              <p class="text-xs mt-1.5 font-mono" style="color:#1E293B">
-                Header requis : <span style="color:#334155">x-webhook-secret: &lt;secret&gt;</span>
+              <p class="text-xs mt-1.5 font-mono" style="color:#64748B">
+                Header requis : <span style="color:#94A3B8">x-webhook-secret: &lt;secret&gt;</span>
               </p>
             </div>
 
           </div>
         </div><!-- /urls -->
 
+        <!-- TTL & Queue config -->
+        <div class="glass rounded-2xl p-5 mb-4">
+          <p class="section-title mb-4">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#FCD34D" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Configuration de la queue
+          </p>
+
+          <!-- TTL actuel -->
+          <div class="flex items-start justify-between gap-4 p-4 rounded-xl mb-3"
+               style="background:rgba(251,191,36,0.05); border:1px solid rgba(251,191,36,0.12)">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                   style="background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.2)">
+                <svg class="w-4 h-4" style="color:#FCD34D" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-white">TTL des messages</p>
+                <p class="text-xs mt-0.5" style="color:#94A3B8">Durée avant suppression automatique des messages lus et expirés</p>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <p class="font-heading text-2xl font-bold text-white" x-text="m.ttl ? m.ttl + 'h' : '--'"></p>
+              <p class="text-xs" style="color:#94A3B8">actuel</p>
+            </div>
+          </div>
+
+          <!-- Cleanup interval -->
+          <div class="flex items-center justify-between p-4 rounded-xl mb-3"
+               style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05)">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                   style="background:rgba(100,116,139,0.1); border:1px solid rgba(100,116,139,0.15)">
+                <svg class="w-4 h-4" style="color:#94A3B8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-white">Nettoyage automatique</p>
+                <p class="text-xs mt-0.5" style="color:#94A3B8">Fréquence de suppression des messages expirés</p>
+              </div>
+            </div>
+            <p class="font-heading text-lg font-semibold" style="color:#94A3B8" x-text="m.cleanupMin ? m.cleanupMin + 'min' : '60min'"></p>
+          </div>
+
+          <!-- Note .env -->
+          <div class="flex items-start gap-2.5 mt-3 p-3 rounded-lg"
+               style="background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.12)">
+            <svg class="w-4 h-4 mt-0.5 flex-shrink-0" style="color:#60A5FA" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+              <p class="text-xs text-white font-medium mb-0.5">Configuration via variables d'environnement</p>
+              <p class="text-xs" style="color:#94A3B8">
+                Pour modifier ces valeurs, éditez le fichier
+                <code class="px-1 py-0.5 rounded text-xs" style="background:rgba(59,130,246,0.1); color:#93C5FD">.env</code>
+                sur le VPS puis relancez :
+                <code class="px-1 py-0.5 rounded text-xs" style="background:rgba(59,130,246,0.1); color:#93C5FD">TTL_HOURS=24</code>
+                et
+                <code class="px-1 py-0.5 rounded text-xs" style="background:rgba(59,130,246,0.1); color:#93C5FD">CLEANUP_INTERVAL_MIN=30</code>
+              </p>
+            </div>
+          </div>
+        </div><!-- /ttl config -->
+
         <!-- Refresh interval -->
         <div class="glass rounded-2xl p-5">
           <p class="section-title mb-4">
-            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#64748B" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" style="color:#94A3B8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
               <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
@@ -992,11 +1132,12 @@
           </p>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm" style="color:#94A3B8">Intervalle de rafraîchissement</p>
-              <p class="text-xs mt-0.5" style="color:#334155">Dashboard en mode auto-refresh</p>
+              <p class="text-sm text-white">Intervalle de rafraîchissement</p>
+              <p class="text-xs mt-0.5" style="color:#94A3B8">Dashboard en mode auto-refresh</p>
             </div>
             <select x-model.number="refreshSec" @change="restartTimer()"
-                    class="glass-sm text-sm px-3 py-2 rounded-xl cursor-pointer outline-none" style="color:#94A3B8; border:1px solid rgba(255,255,255,0.07)">
+                    class="glass-sm text-sm px-3 py-2 rounded-xl cursor-pointer outline-none text-white"
+                    style="border:1px solid rgba(255,255,255,0.07)">
               <option value="10">10 secondes</option>
               <option value="30">30 secondes</option>
               <option value="60">1 minute</option>
@@ -1015,7 +1156,7 @@
 
         <div class="mb-5">
           <h2 class="font-heading text-xl font-semibold text-white">Référence API</h2>
-          <p class="text-sm mt-0.5" style="color:#475569">Toutes les commandes curl, pré-remplies avec ton secret webhook</p>
+          <p class="text-sm mt-0.5" style="color:#94A3B8">Toutes les commandes curl, pré-remplies avec ton secret webhook</p>
         </div>
 
         <div class="space-y-2.5" x-data="{ open: null }">
@@ -1027,13 +1168,13 @@
                 <div class="flex items-start gap-3 flex-1 min-w-0">
                   <span class="badge mt-0.5" :class="`badge-${cmd.method.toLowerCase()}`" x-text="cmd.method"></span>
                   <div class="min-w-0">
-                    <p class="text-sm font-medium text-slate-200 leading-tight" x-text="cmd.name"></p>
-                    <p class="text-xs mt-0.5 truncate" style="color:#334155" x-text="cmd.desc"></p>
+                    <p class="text-sm font-medium text-white leading-tight" x-text="cmd.name"></p>
+                    <p class="text-xs mt-0.5 truncate" style="color:#94A3B8" x-text="cmd.desc"></p>
                   </div>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                   <code class="hidden sm:block text-xs font-mono px-2 py-0.5 rounded"
-                        style="color:#475569; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05)"
+                        style="color:#CBD5E1; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07)"
                         x-text="cmd.endpoint"></code>
                   <svg class="ac-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
@@ -1053,7 +1194,7 @@
                       Copier
                     </button>
                   </div>
-                  <pre style="font-size:0.75rem; font-family:'DM Mono','Fira Code',monospace; color:#64748B; overflow-x:auto; white-space:pre-wrap; word-break:break-all; line-height:1.6"
+                  <pre style="font-size:0.75rem; font-family:'DM Mono','Fira Code',monospace; color:#E2E8F0; overflow-x:auto; white-space:pre-wrap; word-break:break-all; line-height:1.6"
                        x-text="cmd.curl"></pre>
                 </div>
               </div>
@@ -1079,7 +1220,7 @@
         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
       </svg>
     </div>
-    <span class="text-sm text-slate-200" x-text="toast.msg"></span>
+    <span class="text-sm text-white" x-text="toast.msg"></span>
   </div>
 
 </div><!-- /app -->
@@ -1098,17 +1239,19 @@ function app() {
     _chart: null,
     sparkData: [],
 
-    // health (from /status + /healthz)
+    // health — tracked independently from JS errors
     health: { ok: true, mcpUptime: 0 },
 
     // metrics (from /stats)
-    m: { depth: null, processed: null, total: null, uptime: null, ttl: null },
+    m: { depth: null, processed: null, total: null, uptime: null, ttl: null, cleanupMin: null },
 
     loading: { dash: false, explorer: false },
 
-    // Explorer
+    // Explorer — all items array
+    explorerItems: [],
+    explorerOpen: null,
     explorerQ: '',
-    explorerMsg: null,
+    explorerStatusFilter: 'all',
     explorerSearched: false,
 
     // Settings
@@ -1132,7 +1275,8 @@ function app() {
       if (this.autoRefresh) this.startTimer()
     },
 
-    // ── Dashboard refresh ───────────────────────────────────────────
+    // ── Dashboard refresh ─────────────────────────────────────────
+    // health.ok is ONLY set by explicit API response, never by JS exceptions
     async refreshDash() {
       this.loading.dash = true
       try {
@@ -1142,43 +1286,46 @@ function app() {
           fetch('/healthz').then(r => r.ok ? r.json() : null).catch(() => null),
         ])
 
-        // ── Status ──
-        // Response: {"ok":true,"uptime_s":3256}
-        if (statusR !== null) {
+        // ── Queue health: null = network failure, .ok false = service error ──
+        if (statusR === null) {
+          this.health.ok = false          // real network failure
+        } else {
           this.health.ok = statusR.ok === true || statusR.healthy === true
         }
 
         // ── Stats ──
-        // Response: {"ok":true,"uptime_s":3255,"ttl_hours":48,"cleanup_interval_min":60,
-        //            "stats":{"total":1,"pending":0,"read_count":1}}
+        // {"ok":true,"uptime_s":N,"ttl_hours":48,"cleanup_interval_min":60,
+        //  "stats":{"total":N,"pending":N,"read_count":N}}
         if (statsR) {
           const s = statsR.stats || {}
-          this.m.depth     = s.pending      ?? 0
-          this.m.processed = s.read_count   ?? 0
-          this.m.total     = s.total        ?? 0
-          this.m.uptime    = statsR.uptime_s ?? null
-          this.m.ttl       = statsR.ttl_hours ?? null
+          this.m.depth      = s.pending              ?? 0
+          this.m.processed  = s.read_count           ?? 0
+          this.m.total      = s.total                ?? 0
+          this.m.uptime     = statsR.uptime_s        ?? null
+          this.m.ttl        = statsR.ttl_hours       ?? null
+          this.m.cleanupMin = statsR.cleanup_interval_min ?? null
         }
 
         // ── MCP healthz ──
         if (hzR) this.health.mcpUptime = hzR.uptime_s ?? 0
 
-        // Sparkline
+        // Sparkline data
         this.sparkData.push(this.m.depth ?? 0)
         if (this.sparkData.length > 20) this.sparkData.shift()
-        this.updateChart()
+
         this.lastUpdate = new Date().toLocaleTimeString('fr')
 
       } catch (e) {
-        // Only flag degraded on a real exception (network failure etc.)
-        this.health.ok = false
-        console.error('[dash]', e)
+        // JS processing error — log only, do NOT flip health.ok
+        console.error('[dash] unexpected error:', e)
       } finally {
         this.loading.dash = false
+        // Chart update isolated — must not affect health state
+        try { this.updateChart() } catch (e) { console.warn('[chart]', e) }
       }
     },
 
-    // ── Config ───────────────────────────────────────────────────────
+    // ── Config ────────────────────────────────────────────────────
     async loadConfig() {
       if (this._configLoaded) return
       try {
@@ -1191,7 +1338,7 @@ function app() {
     },
     ensureConfig() { this.loadConfig() },
 
-    // ── Secrets ──────────────────────────────────────────────────────
+    // ── Secrets ───────────────────────────────────────────────────
     async loadSecrets() {
       if (this._secretsLoaded) return
       try {
@@ -1207,55 +1354,68 @@ function app() {
       if (this.reveal[k]) this.loadSecrets()
     },
 
-    // ── Explorer ──────────────────────────────────────────────────────
-    maybePeek() {
-      if (!this.explorerMsg && !this.loading.explorer) this.loadPeek()
+    // ── Explorer ──────────────────────────────────────────────────
+    filteredItems() {
+      if (this.explorerStatusFilter === 'all') return this.explorerItems
+      return this.explorerItems.filter(i => i.status === this.explorerStatusFilter)
     },
+
+    maybePeek() {
+      if (!this.explorerItems.length && !this.loading.explorer) this.loadPeek()
+    },
+
     async loadPeek() {
       this.loading.explorer = true
       this.explorerSearched = false
+      this.explorerOpen = null
       try {
         const r = await fetch(`${this.api}/peek`)
         if (r.ok) {
           const d = await r.json()
-          // Response: {"ok":true,"stats":{...},"items":[{id,source,correlation_id,status,created_at,payload}]}
-          const item = Array.isArray(d.items) ? d.items[0] : (d.id ? d : null)
-          this.explorerMsg = item ? this._normalize(item) : null
+          // Response: {"ok":true,"stats":{...},"items":[{id,source,correlation_id,status,created_at,read_at,payload}]}
+          const items = Array.isArray(d.items) ? d.items : (d.id ? [d] : [])
+          this.explorerItems = items.map(i => this._normalize(i))
         } else {
-          this.explorerMsg = null
+          this.explorerItems = []
         }
-      } catch { this.explorerMsg = null }
+      } catch { this.explorerItems = [] }
       finally  { this.loading.explorer = false }
     },
+
     async searchById() {
       if (!this.explorerQ) return
       this.loading.explorer = true
+      this.explorerOpen = null
       try {
         const r = await fetch(`${this.api}/by-id/${encodeURIComponent(this.explorerQ)}?peek=true`)
         if (r.ok) {
           const d = await r.json()
           const item = Array.isArray(d.items) ? d.items[0] : (d.id ? d : null)
-          this.explorerMsg = item ? this._normalize(item) : null
+          this.explorerItems = item ? [this._normalize(item)] : []
           this.explorerSearched = true
-          if (!this.explorerMsg) this.showToast('Message non trouvé', false)
+          if (!this.explorerItems.length) this.showToast('Message non trouvé', false)
+          else this.explorerOpen = this.explorerItems[0].id || 0
         } else {
-          this.explorerMsg = null
+          this.explorerItems = []
           this.showToast('Message non trouvé', false)
         }
       } catch { this.showToast('Erreur de recherche', false) }
       finally  { this.loading.explorer = false }
     },
+
     _normalize(item) {
       return {
+        id:            item.id ?? null,
         correlationId: item.correlation_id ?? item.correlationId ?? null,
-        payload:       item.payload ?? item.body ?? item.data ?? item,
+        payload:       item.payload ?? item.body ?? item.data ?? {},
         createdAt:     item.created_at ? new Date(item.created_at).toLocaleString('fr') : null,
+        readAt:        item.read_at    ? new Date(item.read_at).toLocaleString('fr')    : null,
         status:        item.status ?? null,
         source:        item.source ?? null,
       }
     },
 
-    // ── Auto-refresh ──────────────────────────────────────────────────
+    // ── Auto-refresh ──────────────────────────────────────────────
     toggleAutoRefresh() {
       this.autoRefresh = !this.autoRefresh
       this.autoRefresh ? this.startTimer() : this.stopTimer()
@@ -1269,7 +1429,7 @@ function app() {
     stopTimer()  { if (this._timer) { clearInterval(this._timer); this._timer = null } },
     restartTimer() { if (this.autoRefresh) this.startTimer() },
 
-    // ── API commands ──────────────────────────────────────────────────
+    // ── API commands ──────────────────────────────────────────────
     apiCmds() {
       const s = this.cfg.webhookSecret || '<WEBHOOK_SECRET>'
       const b = this.cfg.webhookApiUrl
@@ -1278,16 +1438,16 @@ function app() {
       const h = `-H "x-webhook-secret: ${s}"`
       return [
         { id:'status', method:'GET',  name:'Statut de la queue',
-          desc:'État de santé + profondeur courante', endpoint:'/status',
+          desc:'État de santé + uptime', endpoint:'/status',
           curl:`curl ${h} \\\n  ${b}/status` },
         { id:'stats',  method:'GET',  name:'Statistiques complètes',
           desc:'Messages traités, pending, total, TTL, uptime…', endpoint:'/stats',
           curl:`curl ${h} \\\n  ${b}/stats` },
         { id:'peek',   method:'GET',  name:'Peek — aperçu non-destructif',
-          desc:'Voir le(s) prochain(s) message(s) sans les consommer', endpoint:'/peek',
+          desc:'Voir les 50 derniers messages sans les consommer', endpoint:'/peek',
           curl:`curl ${h} \\\n  ${b}/peek` },
         { id:'next',   method:'GET',  name:'Next — consommer le prochain',
-          desc:'Récupère ET retire le message de la queue', endpoint:'/next',
+          desc:'Récupère ET retire le message de la queue (FIFO)', endpoint:'/next',
           curl:`curl ${h} \\\n  ${b}/next` },
         { id:'byid',   method:'GET',  name:'Recherche par Correlation ID',
           desc:'Accéder à un message spécifique (peek par défaut)', endpoint:'/by-id/:id',
@@ -1298,7 +1458,7 @@ function app() {
       ]
     },
 
-    // ── Formatters ────────────────────────────────────────────────────
+    // ── Formatters ────────────────────────────────────────────────
     fmtNum(n) {
       if (n == null) return '--'
       return Number(n).toLocaleString('fr')
@@ -1320,15 +1480,15 @@ function app() {
           /("(\\u[\dA-Fa-f]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
           m => {
             let cls = 'jn'
-            if (/^"/.test(m))           cls = /:$/.test(m) ? 'jk' : 'js'
+            if (/^"/.test(m))              cls = /:$/.test(m) ? 'jk' : 'js'
             else if (/true|false/.test(m)) cls = 'jb'
-            else if (/null/.test(m))    cls = 'jl'
+            else if (/null/.test(m))       cls = 'jl'
             return `<span class="${cls}">${m}</span>`
           }
         )
     },
 
-    // Inline SVG sparkline points from array of values
+    // Inline SVG sparkline
     sparkPoints(data, w, h) {
       if (!data || data.length < 2) return ''
       const max = Math.max(...data, 1)
@@ -1339,7 +1499,7 @@ function app() {
       }).join(' ')
     },
 
-    // ── Clipboard ─────────────────────────────────────────────────────
+    // ── Clipboard ─────────────────────────────────────────────────
     async copy(text) {
       if (!text) return
       try {
@@ -1355,7 +1515,7 @@ function app() {
       this._toastTimer = setTimeout(() => { this.toast.on = false }, 2400)
     },
 
-    // ── Chart.js sparkline ────────────────────────────────────────────
+    // ── Chart.js ──────────────────────────────────────────────────
     initChart() {
       const canvas = document.getElementById('sparkChart')
       if (!canvas || !window.Chart) return
@@ -1391,7 +1551,7 @@ function app() {
               borderColor: 'rgba(255,255,255,0.06)',
               borderWidth: 1,
               padding: 8,
-              bodyColor: '#64748B',
+              bodyColor: '#CBD5E1',
             }
           },
           scales: {
@@ -1399,7 +1559,7 @@ function app() {
             y: {
               display: true, min: 0,
               grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false },
-              ticks: { color: '#1E293B', font: { size: 10, family: 'Space Grotesk' }, maxTicksLimit: 4, stepSize: 1 },
+              ticks: { color: '#CBD5E1', font: { size: 10, family: 'Space Grotesk' }, maxTicksLimit: 4, stepSize: 1 },
               border: { display: false },
             }
           },
