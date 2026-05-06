@@ -91,7 +91,7 @@ const stmtClaimByCorrelation = db.prepare(`
 
 const stmtCleanRead    = db.prepare(`DELETE FROM messages WHERE status = 'read' AND read_at < ?`)
 const stmtCleanExpired = db.prepare(`DELETE FROM messages WHERE status = 'pending' AND created_at < ?`)
-const stmtPeek         = db.prepare(`SELECT id, source, status, created_at, read_at, correlation_id, payload FROM messages ORDER BY created_at DESC LIMIT 50`)
+const stmtPeek         = db.prepare(`SELECT id, source, status, created_at, read_at, correlation_id, payload FROM messages ORDER BY created_at DESC LIMIT ? OFFSET ?`)
 const stmtCount        = db.prepare(`
   SELECT
     COUNT(*) as total,
@@ -298,13 +298,17 @@ app.get('/by-id/:correlation_id', auth, (req, res) => {
   })
 })
 
-// GET /peek  ← voir la queue sans toucher
+// GET /peek  ← voir la queue sans toucher (paginé : ?limit=50&offset=0)
 app.get('/peek', auth, (req, res) => {
-  const rows = stmtPeek.all()
+  const limit  = Math.min(Math.max(parseInt(req.query.limit)  || 50,  1), 500)
+  const offset = Math.max(parseInt(req.query.offset) || 0, 0)
+  const rows = stmtPeek.all(limit, offset)
   const stats = stmtCount.get()
   res.json({
     ok: true,
     stats,
+    limit,
+    offset,
     items: rows.map(r => ({
       id: r.id,
       source: r.source,

@@ -38,10 +38,10 @@ async function call(path: string, init: RequestInit = {}): Promise<QueueResult> 
 }
 
 export const queue = {
-  next:   ()                 => call('/next'),
-  peek:   ()                 => call('/peek'),
-  status: ()                 => call('/status'),
-  stats:  ()                 => call('/stats'),
+  next:   ()                              => call('/next'),
+  peek:   (limit = 50, offset = 0)        => call(`/peek?limit=${limit}&offset=${offset}`),
+  status: ()                              => call('/status'),
+  stats:  ()                              => call('/stats'),
 
   byId: (cid: string, peek: boolean) => {
     const qs = peek ? '?peek=true' : ''

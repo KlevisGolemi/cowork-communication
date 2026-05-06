@@ -63,9 +63,11 @@ export function createAdminRouter(): Router {
     proxyQueue(res, () => queue.stats())
   )
 
-  router.get('/peek', (_req: Request, res: Response) =>
-    proxyQueue(res, () => queue.peek())
-  )
+  router.get('/peek', (req: Request, res: Response) => {
+    const limit  = Math.min(Math.max(parseInt(String(req.query.limit))  || 50,  1), 500)
+    const offset = Math.max(parseInt(String(req.query.offset)) || 0, 0)
+    return proxyQueue(res, () => queue.peek(limit, offset))
+  })
 
   router.get('/next', (_req: Request, res: Response) =>
     proxyQueue(res, () => queue.next())
