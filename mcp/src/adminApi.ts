@@ -84,5 +84,13 @@ export function createAdminRouter(): Router {
     return proxyQueue(res, () => queue.send(payload, correlationId))
   })
 
+  router.delete('/clear', (_req: Request, res: Response) =>
+    proxyQueue(res, () => queue.clear())
+  )
+
+  router.delete('/message/:id', (req: Request, res: Response) =>
+    proxyQueue(res, () => queue.deleteById(req.params.id))
+  )
+
   return router
 }

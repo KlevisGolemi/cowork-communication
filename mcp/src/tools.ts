@@ -103,4 +103,28 @@ export function registerTools(server: McpServer): void {
     async ({ payload, correlation_id }) =>
       format(await queue.send(payload, correlation_id), 'queue_send')
   )
+
+  // ─── queue_clear ───────────────────────────────────────────
+  server.registerTool(
+    'queue_clear',
+    {
+      title: 'Vider complètement la queue',
+      description: 'Supprime TOUS les messages (pending et read). Action irréversible. À utiliser uniquement pour maintenance ou reset. Aucun paramètre requis.',
+      inputSchema: {}
+    },
+    async () => format(await queue.clear(), 'queue_clear')
+  )
+
+  // ─── queue_delete ──────────────────────────────────────────
+  server.registerTool(
+    'queue_delete',
+    {
+      title: 'Supprimer un message par ID interne',
+      description: 'Supprime un message spécifique par son UUID interne (champ `id` visible dans queue_peek). Renvoie 404 si le message n\'existe pas.',
+      inputSchema: {
+        id: z.string().uuid().describe('UUID interne du message (champ `id` retourné par queue_peek ou queue_next).')
+      }
+    },
+    async ({ id }) => format(await queue.deleteById(id), 'queue_delete')
+  )
 }

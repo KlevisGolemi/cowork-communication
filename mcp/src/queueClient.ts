@@ -56,5 +56,8 @@ export const queue = {
       headers,
       body: JSON.stringify(payload ?? {})
     })
-  }
+  },
+
+  clear:      ()           => call('/clear',                            { method: 'DELETE' }),
+  deleteById: (id: string) => call(`/message/${encodeURIComponent(id)}`, { method: 'DELETE' }),
 }

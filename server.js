@@ -100,6 +100,7 @@ const stmtCount        = db.prepare(`
   FROM messages
 `)
 const stmtDeleteAll    = db.prepare(`DELETE FROM messages`)
+const stmtDeleteById   = db.prepare(`DELETE FROM messages WHERE id = ?`)
 
 function safeParse(raw) {
   try {
@@ -338,6 +339,14 @@ app.delete('/clear', auth, (req, res) => {
   stmtDeleteAll.run()
   log('warn', 'Queue cleared by request')
   res.json({ ok: true })
+})
+
+// DELETE /message/:id  ← supprimer un message par UUID interne
+app.delete('/message/:id', auth, (req, res) => {
+  const info = stmtDeleteById.run(req.params.id)
+  if (info.changes === 0) return res.status(404).json({ ok: false, error: 'Not found' })
+  log('info', `Message deleted: ${req.params.id}`)
+  res.json({ ok: true, deleted: req.params.id })
 })
 
 // ─── GRACEFUL SHUTDOWN ────────────────────────────────────────────────────────
